@@ -17,6 +17,14 @@
 package org.jetbrains.kotlin.incremental.components
 
 public interface LookupLocation {
+    val location: LocationInfo?
+}
+
+interface LocationInfo {
+    val filePath: String
+
+    // only for tests
+    val position: Pair<Int, Int>
 }
 
 public enum class NoLookupLocation : LookupLocation {
@@ -37,5 +45,7 @@ public enum class NoLookupLocation : LookupLocation {
     WHEN_TYPING,
     WHEN_GET_SUPER_MEMBERS,
     FOR_NON_TRACKED_SCOPE,
-    FROM_SYNTHETIC_SCOPE
+    FROM_SYNTHETIC_SCOPE;
+
+    override val location: LocationInfo? = null
 }
