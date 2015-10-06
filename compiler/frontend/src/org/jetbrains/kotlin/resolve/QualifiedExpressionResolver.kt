@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.resolve.scopes.LexicalScope
 import org.jetbrains.kotlin.resolve.scopes.receivers.QualifierReceiver
 import org.jetbrains.kotlin.resolve.scopes.receivers.ReceiverValue
 import org.jetbrains.kotlin.resolve.scopes.utils.findClassifier
+import org.jetbrains.kotlin.resolve.source.KotlinSourceElement
 import org.jetbrains.kotlin.resolve.validation.SymbolUsageValidator
 import org.jetbrains.kotlin.utils.addIfNotNull
 import org.jetbrains.kotlin.utils.addToStdlib.check
@@ -122,11 +123,19 @@ public class QualifiedExpressionResolver(val symbolUsageValidator: SymbolUsageVa
         val importedReference = importDirective.importedReference ?: return null
         val path = importedReference.asQualifierPartList(trace)
         val lastPart = path.lastOrNull() ?: return null
+        val packageFragmentForCheck =
+                if (packageFragmentForVisibilityCheck is DeclarationDescriptorWithSource && packageFragmentForVisibilityCheck.source == SourceElement.NO_SOURCE) {
+                    WrappedPackageFragmentDescriptor(packageFragmentForVisibilityCheck, KotlinSourceElement(importDirective.getContainingJetFile()))
+                }
+
+                else {
+                    packageFragmentForVisibilityCheck
+                }
 
         if (!importDirective.isAllUnder) {
-            return processSingleImport(moduleDescriptor, trace, importDirective, path, lastPart, packageFragmentForVisibilityCheck)
+            return processSingleImport(moduleDescriptor, trace, importDirective, path, lastPart, packageFragmentForCheck)
         }
-        val packageOrClassDescriptor = resolveToPackageOrClass(path, moduleDescriptor, trace, packageFragmentForVisibilityCheck,
+        val packageOrClassDescriptor = resolveToPackageOrClass(path, moduleDescriptor, trace, packageFragmentForCheck,
                                                                scopeForFirstPart = null, inImport = true) ?: return null
         if (packageOrClassDescriptor is ClassDescriptor && packageOrClassDescriptor.kind.isSingleton) {
             trace.report(Errors.CANNOT_ALL_UNDER_IMPORT_FROM_SINGLETON.on(lastPart.expression, packageOrClassDescriptor)) // todo report on star
@@ -398,8 +407,17 @@ public class QualifiedExpressionResolver(val symbolUsageValidator: SymbolUsageVa
             symbolUsageValidator.validateTypeUsage(descriptor, trace, referenceExpression)
         }
 
-        if (descriptor is DeclarationDescriptorWithVisibility && !isVisible(descriptor, shouldBeVisibleFrom, inImport)) {
-            trace.report(Errors.INVISIBLE_REFERENCE.on(referenceExpression, descriptor, descriptor.visibility, descriptor))
+        if (descriptor is DeclarationDescriptorWithVisibility) {
+            val fromToCheck =
+                if (shouldBeVisibleFrom is PackageFragmentDescriptor && shouldBeVisibleFrom.source == SourceElement.NO_SOURCE) {
+                    WrappedPackageFragmentDescriptor(shouldBeVisibleFrom, KotlinSourceElement(referenceExpression.getContainingJetFile()))
+                }
+                else {
+                    shouldBeVisibleFrom
+                }
+            if (!isVisible(descriptor, fromToCheck, inImport)) {
+                trace.report(Errors.INVISIBLE_REFERENCE.on(referenceExpression, descriptor, descriptor.visibility, descriptor))
+            }
         }
 
         if (isQualifier) {
@@ -428,4 +446,8 @@ public class QualifiedExpressionResolver(val symbolUsageValidator: SymbolUsageVa
         }
         return Visibilities.isVisible(ReceiverValue.IRRELEVANT_RECEIVER, descriptor, shouldBeVisibleFrom)
     }
+}
+
+private class WrappedPackageFragmentDescriptor(private val original: PackageFragmentDescriptor, private val source: SourceElement) : PackageFragmentDescriptor by original {
+    override fun getSource(): SourceElement = source
 }
