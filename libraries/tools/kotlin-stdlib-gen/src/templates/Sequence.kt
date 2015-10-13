@@ -30,7 +30,8 @@ fun sequences(): List<GenericFunction> {
             """
         }
 
-        body(CharSequences) {
+        deprecate(Strings) { Deprecation("Generalized to CharSequence", level = DeprecationLevel.HIDDEN) }
+        body(CharSequences, Strings) {
             """
             if (this is String && isEmpty()) return emptySequence()
             return object : Sequence<T> {

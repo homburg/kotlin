@@ -260,14 +260,14 @@ class GenericFunction(val signature: String, val keyword: String = "fun") {
                                   }
                                   "TCollection" -> {
                                       when (f) {
-                                          Strings, CharSequences -> "Appendable"
+                                          CharSequences, Strings -> "Appendable"
                                           else -> renderType("MutableCollection<in T>", receiver)
                                       }
                                   }
                                   "T" -> {
                                       when (f) {
                                           Generic -> "T"
-                                          Strings, CharSequences -> "Char"
+                                          CharSequences, Strings -> "Char"
                                           Maps -> "Map.Entry<K, V>"
                                           else -> primitive?.name ?: token
                                       }
