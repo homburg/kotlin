@@ -17,7 +17,9 @@
 package org.jetbrains.kotlin.idea.actions
 
 import com.intellij.codeInsight.daemon.QuickFixBundle
+import com.intellij.codeInsight.daemon.impl.ShowAutoImportPass
 import com.intellij.codeInsight.daemon.impl.actions.AddImportAction
+import com.intellij.codeInsight.hint.HintManager
 import com.intellij.codeInsight.hint.QuestionAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
@@ -27,6 +29,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.statistics.StatisticsManager
 import com.intellij.psi.util.ProximityLocation
 import com.intellij.psi.util.proximity.PsiProximityComparator
@@ -44,9 +47,11 @@ import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.idea.util.ImportInsertHelper
 import org.jetbrains.kotlin.idea.util.application.executeWriteCommand
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.name.parentOrNull
+import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression
+import org.jetbrains.kotlin.resolve.dataClassUtils.isComponentLike
 
 /**
  * Automatically adds import directive to the file for resolving reference.
@@ -55,45 +60,59 @@ import org.jetbrains.kotlin.psi.KtSimpleNameExpression
 public class KotlinAddImportAction(
         private val project: Project,
         private val editor: Editor,
-        private val element: KtExpression,
+        private val element: KtElement,
+
         candidates: Collection<DeclarationDescriptor>
 ) : QuestionAction {
 
     private val file = element.getContainingJetFile()
     private val prioritizer = Prioritizer(file)
 
-    private inner class Variant(
-            val fqName: FqName,
-            val descriptors: Collection<DeclarationDescriptor>
-    ) {
+    private inner class SingleImportVariant(val fqName: FqName, val descriptors: Collection<DeclarationDescriptor>, val all: Boolean = false) {
         val priority = descriptors
                 .map { prioritizer.priority(fqName, it) }
                 .min()!!
 
-        val descriptorToImport: DeclarationDescriptor
-            get() {
-                return descriptors.singleOrNull()
-                       ?: descriptors.sortedBy { if (it is ClassDescriptor) 0 else 1 }.first()
-            }
+        val descriptorsToImport: Collection<DeclarationDescriptor> get() =
+                if (all) {
+                    descriptors
+                }
+                else {
+                    listOf(descriptors.singleOrNull() ?: descriptors.sortedBy { if (it is ClassDescriptor) 0 else 1 }.first())
+                }
 
-        val declarationToImport = DescriptorToSourceUtilsIde.getAnyDeclaration(project, descriptorToImport)
+        val hint: String get() = if (all) "Components in $fqName" else fqName.asString()
+
+
+        val declarationToImport: PsiElement? = DescriptorToSourceUtilsIde.getAnyDeclaration(project, descriptorsToImport.first())
     }
 
-    private val variants = candidates
-            .groupBy { it.importableFqName!! }
-            .map { Variant(it.key, it.value) }
-            .sortedBy { it.priority }
+    internal fun showHint(): Boolean {
+        if (variants.isEmpty()) return false
 
-    public val highestPriorityFqName: FqName
-        get() = variants.first().fqName
+        val hintText = ShowAutoImportPass.getMessage(variants.size > 1, highestPriorityVariantHint)
+        HintManager.getInstance().showQuestionHint(editor, hintText, element.getTextOffset(), element.getTextRange()!!.getEndOffset(), this)
+
+        return true
+    }
+
+    private val variants: List<SingleImportVariant> =
+            candidates
+                    .groupBy { it.importableFqName?.parentOrNull() ?: FqName.ROOT }
+                    .filter { it.value.all { candidate -> isComponentLike(candidate.name) } }
+                    .map { SingleImportVariant(it.key.parentOrNull() ?: FqName.ROOT, it.value, true) } +
+            candidates
+                    .groupBy { it.importableFqName!! }
+                    .map { SingleImportVariant(it.key, it.value) }
+                    .sortedBy { it.priority }
+
+    public val highestPriorityVariantHint: String get() = variants.first().hint
 
     override fun execute(): Boolean {
         PsiDocumentManager.getInstance(project).commitAllDocuments()
-        if (!element.isValid()) return false
+        if (!element.isValid) return false
 
-        // TODO: Validate resolution variants. See AddImportAction.execute()
-
-        if (variants.size() == 1 || ApplicationManager.getApplication().isUnitTestMode()) {
+        if (variants.size() == 1 || ApplicationManager.getApplication().isUnitTestMode) {
             addImport(variants.first())
         }
         else {
@@ -103,11 +122,11 @@ public class KotlinAddImportAction(
         return true
     }
 
-    protected fun getImportSelectionPopup(): BaseListPopupStep<Variant> {
-        return object : BaseListPopupStep<Variant>(JetBundle.message("imports.chooser.title"), variants) {
+    protected fun getVariantSelectionPopup(): BaseListPopupStep<SingleImportVariant> {
+        return object : BaseListPopupStep<SingleImportVariant>(JetBundle.message("imports.chooser.title"), variants) {
             override fun isAutoSelectionEnabled() = false
 
-            override fun onChosen(selectedValue: Variant?, finalChoice: Boolean): PopupStep<String>? {
+            override fun onChosen(selectedValue: SingleImportVariant?, finalChoice: Boolean): PopupStep<String>? {
                 if (selectedValue == null || project.isDisposed) return null
 
                 if (finalChoice) {
@@ -131,37 +150,42 @@ public class KotlinAddImportAction(
                 }
             }
 
-            override fun hasSubstep(selectedValue: Variant?) = true
+            override fun hasSubstep(selectedValue: SingleImportVariant?) = true
 
-            override fun getTextFor(value: Variant) = value.fqName.asString()
+            override fun getTextFor(value: SingleImportVariant) = value.fqName.asString()
 
-            override fun getIconFor(value: Variant) = JetDescriptorIconProvider.getIcon(value.descriptorToImport, value.declarationToImport, 0)
+            override fun getIconFor(value: SingleImportVariant) = JetDescriptorIconProvider.getIcon(
+                    value.descriptorsToImport.first(),
+                    value.declarationToImport,
+                    0)
         }
     }
 
     private fun chooseCandidateAndImport() {
-        JBPopupFactory.getInstance().createListPopup(getImportSelectionPopup()).showInBestPositionFor(editor)
+        JBPopupFactory.getInstance().createListPopup(getVariantSelectionPopup()).showInBestPositionFor(editor)
     }
 
-    private fun addImport(selectedVariant: Variant) {
+    private fun addImport(selectedVariant: SingleImportVariant) {
         PsiDocumentManager.getInstance(project).commitAllDocuments()
 
         project.executeWriteCommand(QuickFixBundle.message("add.import")) {
-            if (!element.isValid()) return@executeWriteCommand
+            if (!element.isValid) return@executeWriteCommand
 
             selectedVariant.declarationToImport?.let {
                 val location = ProximityLocation(file, ModuleUtilCore.findModuleForPsiElement(file))
                 StatisticsManager.getInstance().incUseCount(PsiProximityComparator.STATISTICS_KEY, it, location)
             }
 
-            val descriptor = selectedVariant.descriptorToImport
-            // for class or package we use ShortenReferences because we not necessary insert an import but may want to insert partly qualified name
-            if (descriptor is ClassDescriptor || descriptor is PackageViewDescriptor) {
-                if (element is KtSimpleNameExpression) {
-                    element.mainReference.bindToFqName(descriptor.importableFqName!!, KtSimpleNameReference.ShorteningMode.FORCED_SHORTENING)
+            for (descriptor in selectedVariant.descriptorsToImport) {
+                // for class or package we use ShortenReferences because we not necessary insert an import but may want to
+                // insert partly qualified name
+                if (descriptor is ClassDescriptor || descriptor is PackageViewDescriptor) {
+                    if (element is KtSimpleNameExpression) {
+                        element.mainReference.bindToFqName(descriptor.importableFqName!!, KtSimpleNameReference.ShorteningMode.FORCED_SHORTENING)
+                    }
+                } else {
+                    ImportInsertHelper.getInstance(project).importDescriptor(file, descriptor)
                 }
-            } else {
-                ImportInsertHelper.getInstance(project).importDescriptor(file, descriptor)
             }
         }
     }

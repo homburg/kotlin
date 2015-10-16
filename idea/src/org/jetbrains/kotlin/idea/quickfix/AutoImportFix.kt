@@ -16,10 +16,10 @@
 
 package org.jetbrains.kotlin.idea.quickfix
 
-import com.intellij.codeInsight.daemon.impl.ShowAutoImportPass
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.codeInsight.intention.HighPriorityAction
 import com.intellij.codeInspection.HintAction
+import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.Editor
@@ -85,11 +85,7 @@ abstract class AutoImportFixBase<T: KtExpression>(expression: T, val diagnostics
 
         if (suggestions.isEmpty()) return false
 
-        val addImportAction = createAction(element.project, editor)
-        val hintText = ShowAutoImportPass.getMessage(suggestions.size > 1, addImportAction.highestPriorityFqName.asString())
-        HintManager.getInstance().showQuestionHint(editor, hintText, element.getTextOffset(), element.getTextRange()!!.getEndOffset(), addImportAction)
-
-        return true
+        return createAction(element.project, editor).showHint()
     }
 
     override fun getText() = JetBundle.message("import.fix")
@@ -308,6 +304,11 @@ class MissingDelegateAccessorsAutoImportFix(element: KtExpression, diagnostics: 
             return MissingDelegateAccessorsAutoImportFix(diagnostic.psiElement as KtExpression, listOf(diagnostic))
         }
 
+        override fun doCreateActionsForAllProblems(sameTypeDiagnostics: Collection<Diagnostic>): List<IntentionAction> {
+            val element = sameTypeDiagnostics.first().psiElement
+            return (element as? JetExpression)?.let { MissingDelegateAccessorsAutoImportFix(it, sameTypeDiagnostics) }.singletonOrEmptyList()
+        }
+
         private val ERRORS by lazy(LazyThreadSafetyMode.PUBLICATION) { QuickFixes.getInstance().getDiagnostics(this) }
     }
 }
@@ -326,6 +327,11 @@ class MissingComponentsAutoImportFix(element: KtExpression, diagnostics: Collect
         override fun createAction(diagnostic: Diagnostic): KotlinQuickFixAction<KtExpression>? {
             assert(diagnostic.factory == Errors.COMPONENT_FUNCTION_MISSING)
             return MissingComponentsAutoImportFix(diagnostic.psiElement as KtExpression, listOf(diagnostic))
+        }
+
+        override fun doCreateActionsForAllProblems(sameTypeDiagnostics: Collection<Diagnostic>): List<IntentionAction> {
+            val element = sameTypeDiagnostics.first().psiElement
+            return (element as? JetExpression)?.let { MissingComponentsAutoImportFix(it, sameTypeDiagnostics) }.singletonOrEmptyList()
         }
 
         private val ERRORS by lazy(LazyThreadSafetyMode.PUBLICATION) { QuickFixes.getInstance().getDiagnostics(this) }
