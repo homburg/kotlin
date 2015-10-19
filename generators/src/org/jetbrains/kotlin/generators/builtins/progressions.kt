@@ -77,7 +77,7 @@ public class $progression(
         override val start: $t,
         override val endInclusive: $t,
         override val increment: $incrementType
-) : InclusiveProgression<$t> {
+) : InclusiveRangeProgression<$t> {
     init {
         $constructor
     }

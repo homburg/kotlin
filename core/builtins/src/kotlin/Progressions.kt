@@ -25,7 +25,7 @@ public class ByteProgression(
         override val start: Byte,
         override val endInclusive: Byte,
         override val increment: Int
-) : InclusiveProgression<Byte> {
+) : InclusiveRangeProgression<Byte> {
     init {
         if (increment == 0) throw IllegalArgumentException("Increment must be non-zero")
     }
@@ -52,7 +52,7 @@ public class CharProgression(
         override val start: Char,
         override val endInclusive: Char,
         override val increment: Int
-) : InclusiveProgression<Char> {
+) : InclusiveRangeProgression<Char> {
     init {
         if (increment == 0) throw IllegalArgumentException("Increment must be non-zero")
     }
@@ -79,7 +79,7 @@ public class ShortProgression(
         override val start: Short,
         override val endInclusive: Short,
         override val increment: Int
-) : InclusiveProgression<Short> {
+) : InclusiveRangeProgression<Short> {
     init {
         if (increment == 0) throw IllegalArgumentException("Increment must be non-zero")
     }
@@ -106,7 +106,7 @@ public class IntProgression(
         override val start: Int,
         override val endInclusive: Int,
         override val increment: Int
-) : InclusiveProgression<Int> {
+) : InclusiveRangeProgression<Int> {
     init {
         if (increment == 0) throw IllegalArgumentException("Increment must be non-zero")
     }
@@ -133,7 +133,7 @@ public class LongProgression(
         override val start: Long,
         override val endInclusive: Long,
         override val increment: Long
-) : InclusiveProgression<Long> {
+) : InclusiveRangeProgression<Long> {
     init {
         if (increment == 0L) throw IllegalArgumentException("Increment must be non-zero")
     }
@@ -162,7 +162,7 @@ public class FloatProgression(
         override val start: Float,
         override val endInclusive: Float,
         override val increment: Float
-) : InclusiveProgression<Float> {
+) : InclusiveRangeProgression<Float> {
     init {
         if (java.lang.Float.isNaN(increment)) throw IllegalArgumentException("Increment must be not NaN")
         if (increment == 0.0f) throw IllegalArgumentException("Increment must be non-zero")
@@ -192,7 +192,7 @@ public class DoubleProgression(
         override val start: Double,
         override val endInclusive: Double,
         override val increment: Double
-) : InclusiveProgression<Double> {
+) : InclusiveRangeProgression<Double> {
     init {
         if (java.lang.Double.isNaN(increment)) throw IllegalArgumentException("Increment must be not NaN")
         if (increment == 0.0) throw IllegalArgumentException("Increment must be non-zero")

@@ -21,7 +21,7 @@ package kotlin
 /**
  * A range of values of type `Byte`.
  */
-public class ByteRange(override val start: Byte, override val endInclusive: Byte) : InclusiveRange<Byte>, InclusiveProgression<Byte> {
+public class ByteRange(override val start: Byte, override val endInclusive: Byte) : InclusiveRange<Byte>, InclusiveRangeProgression<Byte> {
     @Deprecated("Use endInclusive instead.", ReplaceWith("endInclusive"))
     override val end: Byte get() = endInclusive
 
@@ -52,7 +52,7 @@ public class ByteRange(override val start: Byte, override val endInclusive: Byte
 /**
  * A range of values of type `Char`.
  */
-public class CharRange(override val start: Char, override val endInclusive: Char) : InclusiveRange<Char>, InclusiveProgression<Char> {
+public class CharRange(override val start: Char, override val endInclusive: Char) : InclusiveRange<Char>, InclusiveRangeProgression<Char> {
     @Deprecated("Use endInclusive instead.", ReplaceWith("endInclusive"))
     override val end: Char get() = endInclusive
 
@@ -83,7 +83,7 @@ public class CharRange(override val start: Char, override val endInclusive: Char
 /**
  * A range of values of type `Short`.
  */
-public class ShortRange(override val start: Short, override val endInclusive: Short) : InclusiveRange<Short>, InclusiveProgression<Short> {
+public class ShortRange(override val start: Short, override val endInclusive: Short) : InclusiveRange<Short>, InclusiveRangeProgression<Short> {
     @Deprecated("Use endInclusive instead.", ReplaceWith("endInclusive"))
     override val end: Short get() = endInclusive
 
@@ -114,7 +114,7 @@ public class ShortRange(override val start: Short, override val endInclusive: Sh
 /**
  * A range of values of type `Int`.
  */
-public class IntRange(override val start: Int, override val endInclusive: Int) : InclusiveRange<Int>, InclusiveProgression<Int> {
+public class IntRange(override val start: Int, override val endInclusive: Int) : InclusiveRange<Int>, InclusiveRangeProgression<Int> {
     @Deprecated("Use endInclusive instead.", ReplaceWith("endInclusive"))
     override val end: Int get() = endInclusive
 
@@ -145,7 +145,7 @@ public class IntRange(override val start: Int, override val endInclusive: Int) :
 /**
  * A range of values of type `Long`.
  */
-public class LongRange(override val start: Long, override val endInclusive: Long) : InclusiveRange<Long>, InclusiveProgression<Long> {
+public class LongRange(override val start: Long, override val endInclusive: Long) : InclusiveRange<Long>, InclusiveRangeProgression<Long> {
     @Deprecated("Use endInclusive instead.", ReplaceWith("endInclusive"))
     override val end: Long get() = endInclusive
 
@@ -178,7 +178,7 @@ public class LongRange(override val start: Long, override val endInclusive: Long
 /**
  * A range of values of type `Float`.
  */
-public class FloatRange(override val start: Float, override val endInclusive: Float) : InclusiveRange<Float>, InclusiveProgression<Float> {
+public class FloatRange(override val start: Float, override val endInclusive: Float) : InclusiveRange<Float>, InclusiveRangeProgression<Float> {
     @Deprecated("Use endInclusive instead.", ReplaceWith("endInclusive"))
     override val end: Float get() = endInclusive
 
@@ -211,7 +211,7 @@ public class FloatRange(override val start: Float, override val endInclusive: Fl
 /**
  * A range of values of type `Double`.
  */
-public class DoubleRange(override val start: Double, override val endInclusive: Double) : InclusiveRange<Double>, InclusiveProgression<Double> {
+public class DoubleRange(override val start: Double, override val endInclusive: Double) : InclusiveRange<Double>, InclusiveRangeProgression<Double> {
     @Deprecated("Use endInclusive instead.", ReplaceWith("endInclusive"))
     override val end: Double get() = endInclusive
 
