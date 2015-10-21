@@ -6391,6 +6391,12 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/box/properties"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
+        @TestMetadata("classFieldInsideLambda.kt")
+        public void testClassFieldInsideLambda() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("compiler/testData/codegen/box/properties/classFieldInsideLambda.kt");
+            doTest(fileName);
+        }
+
         @TestMetadata("classFieldInsideNested.kt")
         public void testClassFieldInsideNested() throws Exception {
             String fileName = JetTestUtils.navigationMetadata("compiler/testData/codegen/box/properties/classFieldInsideNested.kt");
@@ -6418,6 +6424,12 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
         @TestMetadata("fieldInsideField.kt")
         public void testFieldInsideField() throws Exception {
             String fileName = JetTestUtils.navigationMetadata("compiler/testData/codegen/box/properties/fieldInsideField.kt");
+            doTest(fileName);
+        }
+
+        @TestMetadata("fieldInsideLambda.kt")
+        public void testFieldInsideLambda() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("compiler/testData/codegen/box/properties/fieldInsideLambda.kt");
             doTest(fileName);
         }
 
