@@ -62,12 +62,4 @@ class StringBuilderTest {
             assertEquals("content", sb.toString())
         }
     }
-
-    @test fun getAndSetChar() {
-        val sb = StringBuilder("abc")
-        sb[1] = 'z'
-
-        assertEquals("azc", sb.toString())
-        assertEquals('c', sb[2])
-    }
 }

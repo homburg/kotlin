@@ -44,4 +44,5 @@ public fun StringBuilder.append(vararg value: Any?): StringBuilder {
 /**
  * Sets the character at the specified [index] to the specified [value].
  */
+@kotlin.jvm.JvmVersion
 public operator fun StringBuilder.set(index: Int, value: Char): Unit = this.setCharAt(index, value)
