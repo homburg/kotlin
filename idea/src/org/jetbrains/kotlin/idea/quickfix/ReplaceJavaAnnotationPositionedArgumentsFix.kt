@@ -16,7 +16,6 @@
 
 package org.jetbrains.kotlin.idea.quickfix
 
-import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.diagnostics.Diagnostic
@@ -32,7 +31,6 @@ import org.jetbrains.kotlin.resolve.calls.model.ExpressionValueArgument
 public class ReplaceJavaAnnotationPositionedArgumentsFix(element: KtAnnotationEntry)
 : KotlinQuickFixAction<KtAnnotationEntry>(element), CleanupFix {
     override fun getText(): String  = "Replace invalid positioned arguments for annotation"
-    override fun getFamilyName(): String = getText()
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val resolvedCall = element.getResolvedCall(element.analyze()) ?: return

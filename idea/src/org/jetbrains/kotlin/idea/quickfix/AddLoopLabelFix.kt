@@ -27,7 +27,6 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 
 public class AddLoopLabelFix(loop: KtLoopExpression, val jumpExpression: KtElement): KotlinQuickFixAction<KtLoopExpression>(loop) {
     override fun getText() = "Add label to loop"
-    override fun getFamilyName() = getText()
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile): Boolean {
         return super.isAvailable(project, editor, file)

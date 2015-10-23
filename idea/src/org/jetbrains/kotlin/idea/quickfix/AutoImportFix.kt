@@ -85,8 +85,6 @@ abstract class AutoImportFixBase<T: KtExpression>(expression: T, val diagnostics
 
     override fun getText() = JetBundle.message("import.fix")
 
-    override fun getFamilyName() = JetBundle.message("import.fix")
-
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile)
             = super.isAvailable(project, editor, file) && suggestionCount > 0
 

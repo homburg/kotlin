@@ -129,8 +129,7 @@ public class KotlinCleanupInspection(): LocalInspectionTool(), CleanupLocalInspe
     }
 
     private class RemoveImportFix(import: KtImportDirective) : KotlinQuickFixAction<KtImportDirective>(import), CleanupFix {
-        override fun getFamilyName() = "Remove deprecated symbol import"
-        override fun getText() = familyName
+        override fun getText() = "Remove deprecated symbol import"
 
         override fun invoke(project: Project, editor: Editor?, file: KtFile) {
             element.delete()

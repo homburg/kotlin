@@ -26,7 +26,6 @@ import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 
 class MoveTypeParameterConstraintFix(element: KtTypeParameter) : KotlinQuickFixAction<KtTypeParameter>(element), CleanupFix {
     override fun getText(): String = "Move type parameter constraint to 'where' clause"
-    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val typeParameterName = element.nameAsName ?: return

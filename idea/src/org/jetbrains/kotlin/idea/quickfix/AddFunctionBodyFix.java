@@ -43,12 +43,6 @@ public class AddFunctionBodyFix extends KotlinQuickFixAction<KtFunction> {
         return JetBundle.message("add.function.body");
     }
 
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return JetBundle.message("add.function.body");
-    }
-
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
         return super.isAvailable(project, editor, file) && !getElement().hasBody();

@@ -107,9 +107,7 @@ public object SuperClassNotInitialized : JetIntentionActionsFactory() {
             val putCaretIntoParenthesis: Boolean
     ) : KotlinQuickFixAction<KtDelegatorToSuperClass>(element), HighPriorityAction {
 
-        override fun getFamilyName() = "Change to constructor invocation" //TODO?
-
-        override fun getText() = getFamilyName()
+        override fun getText() = "Change to constructor invocation" //TODO?
 
         override fun invoke(project: Project, editor: Editor?, file: KtFile) {
             val newSpecifier = element.replaced(KtPsiFactory(project).createDelegatorToSuperCall(element.getText() + "()"))

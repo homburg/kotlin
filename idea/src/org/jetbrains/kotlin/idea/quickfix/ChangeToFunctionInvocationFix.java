@@ -38,12 +38,6 @@ public class ChangeToFunctionInvocationFix extends KotlinQuickFixAction<KtExpres
         return JetBundle.message("change.to.function.invocation");
     }
 
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return JetBundle.message("change.to.function.invocation");
-    }
-
     @Override
     public void invoke(@NotNull Project project, Editor editor, KtFile file) throws IncorrectOperationException {
         KtExpression reference = (KtExpression) getElement().copy();

@@ -40,7 +40,6 @@ import java.io.File
 
 public class AddReflectionQuickFix(element: KtElement) : KotlinQuickFixAction<KtElement>(element) {
     override fun getText() = JetBundle.message("add.reflection.to.classpath")
-    override fun getFamilyName() = getText()
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val pluginReflectJar = PathUtil.getKotlinPathsForIdeaPlugin().getReflectPath()

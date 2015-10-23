@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.psi.KtCodeFragment
 import org.jetbrains.kotlin.psi.KtFile
 
 abstract class KotlinQuickFixAction<T : PsiElement>(protected val element: T) : IntentionAction {
+    override fun getFamilyName() = text
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile): Boolean {
         return element.isValid && (file.manager.isInProject(file) || file is KtCodeFragment) && (file is KtFile)

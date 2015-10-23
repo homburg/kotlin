@@ -45,12 +45,6 @@ public class RemoveFunctionBodyFix extends KotlinQuickFixAction<KtFunction> {
         return JetBundle.message("remove.function.body");
     }
 
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return JetBundle.message("remove.function.body");
-    }
-
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
         return super.isAvailable(project, editor, file) && getElement().hasBody();

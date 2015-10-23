@@ -32,8 +32,6 @@ public class ChangeVariableMutabilityFix(element: KtProperty, private val makeVa
 
     override fun getText() = if (makeVar) "Make variable mutable" else "Make variable immutable"
 
-    override fun getFamilyName(): String = getText()
-
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile): Boolean {
         return element.isVar() != makeVar
     }

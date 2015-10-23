@@ -49,12 +49,6 @@ public class ChangeVisibilityModifierFix extends KotlinQuickFixAction<KtDeclarat
         return JetBundle.message("change.visibility.modifier");
     }
 
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return JetBundle.message("change.visibility.modifier");
-    }
-
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
         if (!(file instanceof KtFile)) return false;

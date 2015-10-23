@@ -36,7 +36,6 @@ class DeprecatedFunctionConventionFix(
         private val newName: String
 ) : KotlinQuickFixAction<KtNamedFunction>(element), CleanupFix {
     override fun getText(): String = "Rename to '$newName'"
-    override fun getFamilyName(): String = text
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         FilteredRenameProcessor(project, element, newName, false, false).run()

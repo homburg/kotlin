@@ -41,7 +41,6 @@ class RenameUnderscoreFix(declaration: KtDeclaration) : KotlinQuickFixAction<KtD
     }
 
     override fun getText(): String = "Rename"
-    override fun getFamilyName(): String = getText()
 
     companion object : JetSingleIntentionActionFactory() {
         override fun createAction(diagnostic: Diagnostic): IntentionAction? {

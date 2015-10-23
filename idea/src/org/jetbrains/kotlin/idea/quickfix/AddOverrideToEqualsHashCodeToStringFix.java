@@ -47,12 +47,6 @@ public class AddOverrideToEqualsHashCodeToStringFix extends KotlinQuickFixAction
         return JetBundle.message("add.override.to.equals.hashCode.toString");
     }
 
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return JetBundle.message("add.override.to.equals.hashCode.toString");
-    }
-
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
         return super.isAvailable(project, editor, file) && isEqualsHashCodeOrToString(getElement());

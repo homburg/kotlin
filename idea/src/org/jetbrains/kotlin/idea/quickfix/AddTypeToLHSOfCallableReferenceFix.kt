@@ -32,8 +32,7 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 class AddTypeToLHSOfCallableReferenceFix(
         expression: KtCallableReferenceExpression
 ) : KotlinQuickFixAction<KtCallableReferenceExpression>(expression), CleanupFix {
-    override fun getFamilyName() = "Add type to left-hand side"
-    override fun getText() = familyName
+    override fun getText() = "Add type to left-hand side"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val resolvedCall = element.callableReference.getResolvedCall(element.analyze(BodyResolveMode.PARTIAL)) ?: return

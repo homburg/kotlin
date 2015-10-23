@@ -30,8 +30,6 @@ public class ReplaceInfixCallFix(element: KtBinaryExpression) : KotlinQuickFixAc
 
     override fun getText() = "Replace with safe (?.) call"
 
-    override fun getFamilyName() = text
-
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val newExpression = KtPsiFactory(file).createExpressionByPattern(
                 "$0?.$1($2)", element.left!!, element.operationReference, element.right!!)

@@ -31,8 +31,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 class MigrateTypeParameterListFix(typeParameterList: KtTypeParameterList)
     : KotlinQuickFixAction<KtTypeParameterList>(typeParameterList), CleanupFix {
 
-    override fun getFamilyName(): String = "Migrate type parameter list syntax"
-    override fun getText(): String  = familyName
+    override fun getText(): String = "Migrate type parameter list syntax"
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val function = element.getStrictParentOfType<KtNamedFunction>() ?: return

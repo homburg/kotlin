@@ -180,8 +180,7 @@ public class ConflictingExtensionPropertyInspection : AbstractKotlinInspection()
     private class DeleteRedundantExtensionAction(property: KtProperty) : KotlinQuickFixAction<KtProperty>(property) {
         private val LOG = Logger.getInstance(DeleteRedundantExtensionAction::class.java);
 
-        override fun getFamilyName() = "Delete redundant extension property"
-        override fun getText() = familyName
+        override fun getText() = "Delete redundant extension property"
 
         override fun startInWriteAction() = false
 
@@ -223,8 +222,7 @@ public class ConflictingExtensionPropertyInspection : AbstractKotlinInspection()
     }
 
     private class MarkHiddenAndDeprecatedAction(property: KtProperty) : KotlinQuickFixAction<KtProperty>(property) {
-        override fun getFamilyName() = "Mark as @Deprecated(..., level = DeprecationLevel.HIDDEN)"
-        override fun getText() = familyName
+        override fun getText() = "Mark as @Deprecated(..., level = DeprecationLevel.HIDDEN)"
 
         override fun invoke(project: Project, editor: Editor?, file: KtFile) {
             val factory = KtPsiFactory(project)
