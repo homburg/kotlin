@@ -5,6 +5,7 @@ package kotlin
  * The generator function calls this function, passing to it either [initialValue] on the first iteration
  * or the previously returned value on subsequent iterations, and returns the returned value.
  */
+@Deprecated("This part of API is deprecated and wouldn't be released at 1.0")
 public fun <T: Any> Function1<T, T?>.toGenerator(initialValue: T): Function0<T?> {
     var nextValue: T? = initialValue
     return {
