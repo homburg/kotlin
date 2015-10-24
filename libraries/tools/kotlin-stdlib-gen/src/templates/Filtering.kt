@@ -13,11 +13,6 @@ fun filtering(): List<GenericFunction> {
         }
     }
 
-    fun element(f: Family) = when (f) {
-        Strings, CharSequences -> "character"
-        else -> "element"
-    }
-
     templates add f("drop(n: Int)") {
         val n = "\$n"
         doc { "Returns a list containing all elements except first [n] elements." }
