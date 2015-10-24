@@ -135,7 +135,8 @@ public fun String.substring(beginIndex: Int): String = (this as java.lang.String
 public fun String.substring(beginIndex: Int, endIndex: Int): String = (this as java.lang.String).substring(beginIndex, endIndex)
 
 @Deprecated("Mangled name", level = DeprecationLevel.HIDDEN)
-public fun String.substring(beginIndex: Int, endIndex: Int): String = (this as java.lang.String).substring(beginIndex, endIndex)
+@kotlin.jvm.JvmName("substring")
+public fun String.`~substring`(beginIndex: Int, endIndex: Int): String = (this as java.lang.String).substring(beginIndex, endIndex)
 
 /**
  * Returns `true` if this string starts with the specified prefix.
@@ -410,11 +411,20 @@ public operator fun CharSequence.get(start: Int, end: Int): CharSequence = subSe
 @kotlin.jvm.JvmName("~toByteArray")
 public fun String.toByteArray(charset: String): ByteArray = (this as java.lang.String).getBytes(charset)
 
+@Deprecated("Use getBytes() in java", level = DeprecationLevel.HIDDEN)
+@kotlin.jvm.JvmName("toByteArray")
+public fun String.`~toByteArray`(charset: String): ByteArray = (this as java.lang.String).getBytes(charset)
+
+
 /**
  * Encodes the contents of this string using the specified character set and returns the resulting byte array.
  */
 @kotlin.jvm.JvmName("~toByteArray")
 public fun String.toByteArray(charset: Charset = Charsets.UTF_8): ByteArray = (this as java.lang.String).getBytes(charset)
+
+@Deprecated("Use getBytes() in java", level = DeprecationLevel.HIDDEN)
+@kotlin.jvm.JvmName("toByteArray")
+public fun String.`~toByteArray`(charset: Charset = Charsets.UTF_8): ByteArray = (this as java.lang.String).getBytes(charset)
 
 /**
  * Returns a subsequence of this sequence specified by given [range].
