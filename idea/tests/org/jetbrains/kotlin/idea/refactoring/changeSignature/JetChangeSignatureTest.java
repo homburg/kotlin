@@ -1330,6 +1330,14 @@ public class JetChangeSignatureTest extends KotlinCodeInsightTestCase {
         doTest(changeInfo);
     }
 
+    public void testImplicitThisToParameterWithChangedType() throws Exception {
+        JetChangeInfo changeInfo = getChangeInfo();
+        //noinspection ConstantConditions
+        changeInfo.getReceiverParameterInfo().setCurrentTypeText("Older");
+        changeInfo.setReceiverParameterInfo(null);
+        doTest(changeInfo);
+    }
+
     private List<Editor> editors = null;
 
     private static final String[] EXTENSIONS = {".kt", ".java"};
