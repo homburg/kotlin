@@ -56,6 +56,115 @@ public class KotlinTypedHandler extends TypedHandlerDelegate {
 
     private boolean jetLTTyped;
 
+    private static void autoPopupParameterInfo(Project project, Editor editor) {
+        int offset = editor.getCaretModel().getOffset();
+        if (offset == 0) return;
+
+        HighlighterIterator iterator = ((EditorEx) editor).getHighlighter().createIterator(offset - 1);
+        IElementType tokenType = iterator.getTokenType();
+        if (KtTokens.COMMENTS.contains(tokenType)
+            || tokenType == KtTokens.REGULAR_STRING_PART
+            || tokenType == KtTokens.OPEN_QUOTE
+            || tokenType == KtTokens.CHARACTER_LITERAL) return;
+
+        AutoPopupController.getInstance(project).autoPopupParameterInfo(editor, null);
+    }
+
+    private static void autoPopupMemberLookup(Project project, final Editor editor) {
+        AutoPopupController.getInstance(project).autoPopupMemberLookup(editor, new Condition<PsiFile>() {
+            @Override
+            public boolean value(PsiFile file) {
+                int offset = editor.getCaretModel().getOffset();
+
+                PsiElement lastElement = file.findElementAt(offset - 1);
+                if (lastElement == null) return false;
+
+                IElementType elementType = lastElement.getNode().getElementType();
+                return elementType == KtTokens.DOT || elementType == KtTokens.SAFE_ACCESS;
+            }
+        });
+    }
+
+    private static void autoPopupLabelLookup(Project project, final Editor editor) {
+        AutoPopupController.getInstance(project).autoPopupMemberLookup(editor, new Condition<PsiFile>() {
+            @Override
+            public boolean value(PsiFile file) {
+                int offset = editor.getCaretModel().getOffset();
+
+                CharSequence chars = editor.getDocument().getCharsSequence();
+                if (!endsWith(chars, offset, "this@")
+                    && !endsWith(chars, offset, "return@")
+                    && !endsWith(chars, offset, "break@")
+                    && !endsWith(chars, offset, "continue@")) return false;
+
+                PsiElement lastElement = file.findElementAt(offset - 1);
+                if (lastElement == null) return false;
+
+                return lastElement.getNode().getElementType() == KtTokens.AT;
+            }
+        });
+    }
+
+    private static void autoPopupCallableReferenceLookup(Project project, final Editor editor) {
+        AutoPopupController.getInstance(project).autoPopupMemberLookup(editor, new Condition<PsiFile>() {
+            @Override
+            public boolean value(PsiFile file) {
+                int offset = editor.getCaretModel().getOffset();
+
+                PsiElement lastElement = file.findElementAt(offset - 1);
+                if (lastElement == null) return false;
+
+                return lastElement.getNode().getElementType() == KtTokens.COLONCOLON;
+            }
+        });
+    }
+
+    private static boolean endsWith(CharSequence chars, int offset, String text) {
+        if (offset < text.length()) return false;
+        return chars.subSequence(offset - text.length(), offset).toString().equals(text);
+    }
+
+    /**
+     * Copied from
+     * @see com.intellij.codeInsight.editorActions.TypedHandler#indentBrace(Project, Editor, char)
+     */
+    private static void indentBrace(@NotNull final Project project, @NotNull final Editor editor, char braceChar) {
+        final int offset = editor.getCaretModel().getOffset() - 1;
+        Document document = editor.getDocument();
+        CharSequence chars = document.getCharsSequence();
+        if (offset < 0 || chars.charAt(offset) != braceChar) return;
+
+        int spaceStart = CharArrayUtil.shiftBackward(chars, offset - 1, " \t");
+        if (spaceStart < 0 || chars.charAt(spaceStart) == '\n' || chars.charAt(spaceStart) == '\r') {
+            PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
+            documentManager.commitDocument(document);
+
+            final PsiFile file = documentManager.getPsiFile(document);
+            if (file == null || !file.isWritable()) return;
+            PsiElement element = file.findElementAt(offset);
+            if (element == null) return;
+
+            EditorHighlighter highlighter = ((EditorEx) editor).getHighlighter();
+            HighlighterIterator iterator = highlighter.createIterator(offset);
+
+            FileType fileType = file.getFileType();
+            BraceMatcher braceMatcher = BraceMatchingUtil.getBraceMatcher(fileType, iterator);
+            boolean isBrace =
+                    braceMatcher.isLBraceToken(iterator, chars, fileType) || braceMatcher.isRBraceToken(iterator, chars, fileType);
+            if (element.getNode() != null && isBrace) {
+                ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        int newOffset = CodeStyleManager.getInstance(project).adjustLineIndent(file, offset);
+                        editor.getCaretModel().moveToOffset(newOffset + 1);
+                        editor.getScrollingModel().scrollToCaret(ScrollType.RELATIVE);
+                        editor.getSelectionModel().removeSelection();
+                    }
+                });
+            }
+        }
+    }
+
     @Override
     public Result beforeCharTyped(char c, Project project, Editor editor, PsiFile file, FileType fileType) {
         if (!(file instanceof KtFile)) {
@@ -124,63 +233,13 @@ public class KotlinTypedHandler extends TypedHandlerDelegate {
             case ':':
                 autoPopupCallableReferenceLookup(project, editor);
                 return Result.CONTINUE;
+
+            case '[':
+                autoPopupParameterInfo(project, editor);
+                return Result.CONTINUE;
         }
 
         return Result.CONTINUE;
-    }
-
-    private static void autoPopupMemberLookup(Project project, final Editor editor) {
-        AutoPopupController.getInstance(project).autoPopupMemberLookup(editor, new Condition<PsiFile>() {
-            @Override
-            public boolean value(PsiFile file) {
-                int offset = editor.getCaretModel().getOffset();
-
-                PsiElement lastElement = file.findElementAt(offset - 1);
-                if (lastElement == null) return false;
-
-                IElementType elementType = lastElement.getNode().getElementType();
-                return elementType == KtTokens.DOT || elementType == KtTokens.SAFE_ACCESS;
-            }
-        });
-    }
-
-    private static void autoPopupLabelLookup(Project project, final Editor editor) {
-        AutoPopupController.getInstance(project).autoPopupMemberLookup(editor, new Condition<PsiFile>() {
-            @Override
-            public boolean value(PsiFile file) {
-                int offset = editor.getCaretModel().getOffset();
-
-                CharSequence chars = editor.getDocument().getCharsSequence();
-                if (!endsWith(chars, offset, "this@")
-                    && !endsWith(chars, offset, "return@")
-                    && !endsWith(chars, offset, "break@")
-                    && !endsWith(chars, offset, "continue@")) return false;
-
-                PsiElement lastElement = file.findElementAt(offset - 1);
-                if (lastElement == null) return false;
-
-                return lastElement.getNode().getElementType() == KtTokens.AT;
-            }
-        });
-    }
-
-    private static void autoPopupCallableReferenceLookup(Project project, final Editor editor) {
-        AutoPopupController.getInstance(project).autoPopupMemberLookup(editor, new Condition<PsiFile>() {
-            @Override
-            public boolean value(PsiFile file) {
-                int offset = editor.getCaretModel().getOffset();
-
-                PsiElement lastElement = file.findElementAt(offset - 1);
-                if (lastElement == null) return false;
-
-                return lastElement.getNode().getElementType() == KtTokens.COLONCOLON;
-            }
-        });
-    }
-
-    private static boolean endsWith(CharSequence chars, int offset, String text) {
-        if (offset < text.length()) return false;
-        return chars.subSequence(offset - text.length(), offset).toString().equals(text);
     }
 
     @Override
@@ -208,46 +267,5 @@ public class KotlinTypedHandler extends TypedHandlerDelegate {
         }
 
         return Result.CONTINUE;
-    }
-
-    /**
-     * Copied from
-     * @see com.intellij.codeInsight.editorActions.TypedHandler#indentBrace(Project, Editor, char)
-     */
-    private static void indentBrace(@NotNull final Project project, @NotNull final Editor editor, char braceChar) {
-        final int offset = editor.getCaretModel().getOffset() - 1;
-        Document document = editor.getDocument();
-        CharSequence chars = document.getCharsSequence();
-        if (offset < 0 || chars.charAt(offset) != braceChar) return;
-
-        int spaceStart = CharArrayUtil.shiftBackward(chars, offset - 1, " \t");
-        if (spaceStart < 0 || chars.charAt(spaceStart) == '\n' || chars.charAt(spaceStart) == '\r') {
-            PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
-            documentManager.commitDocument(document);
-
-            final PsiFile file = documentManager.getPsiFile(document);
-            if (file == null || !file.isWritable()) return;
-            PsiElement element = file.findElementAt(offset);
-            if (element == null) return;
-
-            EditorHighlighter highlighter = ((EditorEx) editor).getHighlighter();
-            HighlighterIterator iterator = highlighter.createIterator(offset);
-
-            FileType fileType = file.getFileType();
-            BraceMatcher braceMatcher = BraceMatchingUtil.getBraceMatcher(fileType, iterator);
-            boolean isBrace =
-                    braceMatcher.isLBraceToken(iterator, chars, fileType) || braceMatcher.isRBraceToken(iterator, chars, fileType);
-            if (element.getNode() != null && isBrace) {
-                ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        int newOffset = CodeStyleManager.getInstance(project).adjustLineIndent(file, offset);
-                        editor.getCaretModel().moveToOffset(newOffset + 1);
-                        editor.getScrollingModel().scrollToCaret(ScrollType.RELATIVE);
-                        editor.getSelectionModel().removeSelection();
-                    }
-                });
-            }
-        }
     }
 }
