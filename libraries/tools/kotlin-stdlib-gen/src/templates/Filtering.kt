@@ -58,7 +58,12 @@ fun filtering(): List<GenericFunction> {
         doc(Strings) { "Returns a string with the first [n] characters removed."}
         doc(CharSequences) { "Returns a subsequence of this char sequence with the first [n] characters removed."}
         returns(Strings, CharSequences) { "SELF" }
-        body(Strings, CharSequences) { f -> "return ${subsequence(f, "n.coerceAtMost(length)")}" }
+        body(Strings, CharSequences) { f ->
+            """
+            require(n >= 0, { "Requested character count $n is less than zero." })
+            return ${subsequence(f, "n.coerceAtMost(length)")}
+            """
+        }
 
         body(ArraysOfObjects, ArraysOfPrimitives) {
             """

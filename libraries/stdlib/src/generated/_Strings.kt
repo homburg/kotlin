@@ -449,6 +449,7 @@ public inline fun String.singleOrNull(predicate: (Char) -> Boolean): Char? {
  * Returns a subsequence of this char sequence with the first [n] characters removed.
  */
 public fun CharSequence.drop(n: Int): CharSequence {
+    require(n >= 0, { "Requested character count $n is less than zero." })
     return subSequence(n.coerceAtMost(length), length)
 }
 
@@ -456,6 +457,7 @@ public fun CharSequence.drop(n: Int): CharSequence {
  * Returns a string with the first [n] characters removed.
  */
 public fun String.drop(n: Int): String {
+    require(n >= 0, { "Requested character count $n is less than zero." })
     return substring(n.coerceAtMost(length))
 }
 
