@@ -24,7 +24,9 @@ interface LocationInfo {
     val filePath: String
 
     // only for tests
-    val position: Pair<Int, Int>
+    val position: Position
+
+    data class Position(val line: Int, val column: Int)
 }
 
 public enum class NoLookupLocation : LookupLocation {
