@@ -16,10 +16,11 @@
 
 package org.jetbrains.kotlin.resolve.lazy.descriptors;
 
-import com.google.common.collect.Sets;
 import kotlin.CollectionsKt;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.kotlin.descriptors.SupertypeLoopsResolver;
 import org.jetbrains.kotlin.descriptors.impl.AbstractLazyTypeParameterDescriptor;
+import org.jetbrains.kotlin.diagnostics.Errors;
 import org.jetbrains.kotlin.lexer.KtTokens;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.BindingContext;
@@ -57,6 +58,22 @@ public class LazyTypeParameterDescriptor extends AbstractLazyTypeParameterDescri
         this.typeParameter = typeParameter;
 
         this.c.getTrace().record(BindingContext.TYPE_PARAMETER, typeParameter, this);
+    }
+
+    @NotNull
+    @Override
+    protected SupertypeLoopsResolver getSupertypeLoopsResolver() {
+        return c.getSupertypeLoopsResolver();
+    }
+
+    @Override
+    protected void reportCycleError(@NotNull KotlinType type) {
+        for (KtTypeReference typeReference : getAllUpperBounds()) {
+            if (resolveBoundType(typeReference).getConstructor().equals(type.getConstructor())) {
+                c.getTrace().report(Errors.CYCLIC_GENERIC_UPPER_BOUND.on(typeReference));
+                return;
+            }
+        }
     }
 
     @NotNull
