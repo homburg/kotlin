@@ -47,11 +47,7 @@ import org.jetbrains.kotlin.types.TypeUtils.DONT_CARE
 import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.types.expressions.ExpressionTypingUtils
 
-
-class GenericCandidateResolver(
-        private val argumentTypeResolver: ArgumentTypeResolver
-) {
-
+class GenericCandidateResolver(private val argumentTypeResolver: ArgumentTypeResolver) {
     fun <D : CallableDescriptor> inferTypeArguments(context: CallCandidateResolutionContext<D>): ResolutionStatus {
         val candidateCall = context.candidateCall
         val candidate = candidateCall.getCandidateDescriptor()
@@ -68,7 +64,7 @@ class GenericCandidateResolver(
         val candidateWithFreshVariables = FunctionDescriptorUtil.alphaConvertTypeParameters(candidate)
 
         val conversionToOriginal = candidateWithFreshVariables.getTypeParameters().zip(candidate.getTypeParameters()).toMap()
-        constraintSystem.registerTypeVariables(candidateWithFreshVariables.getTypeParameters(), { Variance.INVARIANT }, { conversionToOriginal[it]!! })
+        constraintSystem.registerTypeVariables(candidateWithFreshVariables.getTypeParameters(), { conversionToOriginal[it]!! })
 
         val substituteDontCare = makeConstantSubstitutor(candidate.getTypeParameters(), DONT_CARE)
 
@@ -168,7 +164,7 @@ class GenericCandidateResolver(
         val conversion = candidateDescriptor.getTypeParameters().zip(candidateWithFreshVariables.getTypeParameters()).toMap()
 
         val freshVariables = nestedTypeVariables.map { conversion[it] }.filterNotNull()
-        constraintSystem.registerTypeVariables(freshVariables, { Variance.INVARIANT }, { it }, external = true)
+        constraintSystem.registerTypeVariables(freshVariables, external = true)
 
         constraintSystem.addSubtypeConstraint(candidateWithFreshVariables.getReturnType(), effectiveExpectedType, constraintPosition)
         return true
