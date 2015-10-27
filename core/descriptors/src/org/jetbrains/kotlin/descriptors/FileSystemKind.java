@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package org.jetbrains.kotlin.load.kotlin
+package org.jetbrains.kotlin.descriptors;
 
-import org.jetbrains.kotlin.descriptors.SourceElement
-import org.jetbrains.kotlin.descriptors.SourceFile
-
-public class KotlinJvmBinarySourceElement(public val binaryClass: KotlinJvmBinaryClass) : SourceElement {
-    override fun toString() = javaClass.name + ": " + binaryClass.toString()
-    override fun getContainingFile(): SourceFile = BinarySourceFile(listOf(binaryClass))
+public enum FileSystemKind {
+    UNDEFINED,
+    JAR
 }

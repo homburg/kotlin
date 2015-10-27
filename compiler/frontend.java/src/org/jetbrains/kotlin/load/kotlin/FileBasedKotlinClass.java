@@ -20,6 +20,7 @@ import com.intellij.openapi.util.Ref;
 import kotlin.jvm.functions.Function3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.descriptors.FileSystemKind;
 import org.jetbrains.kotlin.descriptors.SourceElement;
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader;
 import org.jetbrains.kotlin.load.kotlin.header.ReadKotlinClassHeaderAnnotationVisitor;
@@ -131,6 +132,12 @@ public abstract class FileBasedKotlinClass implements KotlinJvmBinaryClass {
     @Override
     public KotlinClassHeader getClassHeader() {
         return classHeader;
+    }
+
+    @NotNull
+    @Override
+    public FileSystemKind getFileSystemKind() {
+        return FileSystemKind.UNDEFINED;
     }
 
     @Override

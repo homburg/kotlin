@@ -16,6 +16,17 @@
 
 package org.jetbrains.kotlin.descriptors;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface SourceFile {
-    SourceFile NO_SOURCE_FILE = new SourceFile() {};
+    SourceFile NO_SOURCE_FILE = new SourceFile() {
+        @NotNull
+        @Override
+        public FileSystemKind getFileSystemKind() {
+            return FileSystemKind.UNDEFINED;
+        }
+    };
+
+    @NotNull
+    FileSystemKind getFileSystemKind();
 }
