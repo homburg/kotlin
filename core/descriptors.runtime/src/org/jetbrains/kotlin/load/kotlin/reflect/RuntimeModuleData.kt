@@ -58,7 +58,7 @@ public class RuntimeModuleData private constructor(public val deserialization: D
                     storageManager, ReflectJavaClassFinder(classLoader), reflectKotlinClassFinder, deserializedDescriptorResolver,
                     ExternalAnnotationResolver.EMPTY, ExternalSignatureResolver.DO_NOTHING, RuntimeErrorReporter, JavaResolverCache.EMPTY,
                     JavaPropertyInitializerEvaluator.DoNothing, SamConversionResolver, RuntimeSourceElementFactory, singleModuleClassResolver,
-                    runtimePackageFacadeProvider
+                    runtimePackageFacadeProvider, LookupTracker.DO_NOTHING
             )
 
             val lazyJavaPackageFragmentProvider =

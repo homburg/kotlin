@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.load.java.lazy.resolveKotlinBinaryClass
 import org.jetbrains.kotlin.load.java.structure.JavaClass
 import org.jetbrains.kotlin.load.java.structure.JavaPackage
 import org.jetbrains.kotlin.load.kotlin.DeserializedDescriptorResolver
-import org.jetbrains.kotlin.load.kotlin.KotlinJvmBinaryClass
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
@@ -103,8 +102,12 @@ public class LazyJavaPackageScope(
         }
     }
 
-    override fun getClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? =
-            if (SpecialNames.isSafeIdentifier(name)) classes(name) else null
+    override fun getClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? {
+        if (!SpecialNames.isSafeIdentifier(name)) return null
+
+        recordLookup(name, location)
+        return classes(name)
+    }
 
     override fun getProperties(name: Name, location: LookupLocation) = deserializedPackageScope().getProperties(name, location)
     override fun getFunctions(name: Name, location: LookupLocation) = deserializedPackageScope().getFunctions(name, location) + super.getFunctions(name, location)
