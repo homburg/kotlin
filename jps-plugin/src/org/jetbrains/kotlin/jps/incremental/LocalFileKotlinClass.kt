@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.jps.incremental
 
+import org.jetbrains.kotlin.descriptors.FileSystemProtocol
 import org.jetbrains.kotlin.load.kotlin.FileBasedKotlinClass
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader
 import org.jetbrains.kotlin.name.ClassId
@@ -45,6 +46,8 @@ class LocalFileKotlinClass private constructor(
     override fun getLocation(): String = file.absolutePath
 
     public override fun getFileContents(): ByteArray = fileContents
+
+    override fun getFileSystemProtocol(): FileSystemProtocol = FileSystemProtocol.FILE
 
     override fun hashCode(): Int = file.hashCode()
     override fun equals(other: Any?): Boolean = other is LocalFileKotlinClass && file == other.file

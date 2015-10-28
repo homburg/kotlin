@@ -137,7 +137,7 @@ public abstract class FileBasedKotlinClass implements KotlinJvmBinaryClass {
     @NotNull
     @Override
     public FileSystemProtocol getFileSystemProtocol() {
-        return FileSystemProtocol.FILE;
+        return FileSystemProtocol.UNDEFINED;
     }
 
     @Override

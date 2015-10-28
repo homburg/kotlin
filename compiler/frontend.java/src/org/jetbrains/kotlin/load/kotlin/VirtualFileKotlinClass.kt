@@ -35,7 +35,7 @@ public class VirtualFileKotlinClass private constructor(
         innerClasses: FileBasedKotlinClass.InnerClassesInfo
 ) : FileBasedKotlinClass(className, classHeader, innerClasses) {
     override fun getFileSystemProtocol() =
-            when(file.fileSystem.protocol) {
+            when (file.fileSystem.protocol) {
                 StandardFileSystems.FILE_PROTOCOL -> FileSystemProtocol.FILE
                 StandardFileSystems.JAR_PROTOCOL -> FileSystemProtocol.JAR
                 else -> FileSystemProtocol.UNDEFINED
