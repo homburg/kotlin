@@ -18,7 +18,7 @@ import bar.*
         /*c:foo.A*/foo()
         this./*c:foo.A*/a
         this./*c:foo.A*/foo()
-        /*c:foo.A c:foo.A.Companion p:foo p:bar c:foo.A(getBaz) c:foo.A(getBAZ)*/baz()
+        /*c:foo.A c:foo.A.Companion p:foo p:bar p:java.lang p:kotlin.annotation c:foo.A(getBaz) c:foo.A(getBAZ)*/baz()
         /*c:foo.A c:foo.A.Companion p:foo p:bar*/Companion./*c:foo.A.Companion*/a
         /*c:foo.A c:foo.A.Companion p:foo p:bar*/O./*c:foo.A.O*/v = "OK"
     }
@@ -67,11 +67,11 @@ import bar.*
 }
 
 /*p:foo*/fun usages(i: /*p:foo*/I) {
-    /*p:foo p:bar*/A()./*c:foo.A*/a
-    /*p:foo p:bar*/A()./*c:foo.A*/b
-    /*p:foo p:bar*/A()./*c:foo.A*/c
-    /*p:foo p:bar*/A()./*c:foo.A*/d = "new value"
-    /*p:foo p:bar*/A()./*c:foo.A*/foo()
+    /*p:foo p:bar p:java.lang p:kotlin.annotation*/A()./*c:foo.A*/a
+    /*p:foo p:bar p:java.lang p:kotlin.annotation*/A()./*c:foo.A*/b
+    /*p:foo p:bar p:java.lang p:kotlin.annotation*/A()./*c:foo.A*/c
+    /*p:foo p:bar p:java.lang p:kotlin.annotation*/A()./*c:foo.A*/d = "new value"
+    /*p:foo p:bar p:java.lang p:kotlin.annotation*/A()./*c:foo.A*/foo()
     /*p:foo p:bar*/A./*c:foo.A*/B()./*c:foo.A.B*/a
     /*p:foo p:bar*/A./*c:foo.A*/B./*c:foo.A.B c:foo.A.B.CO*/bar(1)
     /*p:foo p:bar*/A./*c:foo.A*/B./*c:foo.A.B*/CO./*c:foo.A.B.CO*/bar(1)
