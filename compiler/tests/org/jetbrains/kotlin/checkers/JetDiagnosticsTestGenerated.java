@@ -14451,6 +14451,12 @@ public class JetDiagnosticsTestGenerated extends AbstractJetDiagnosticsTest {
                 doTest(fileName);
             }
 
+            @TestMetadata("onLambda.kt")
+            public void testOnLambda() throws Exception {
+                String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/smartCasts/onLambda.kt");
+                doTest(fileName);
+            }
+
             @TestMetadata("ownerDeclaresBothModifies.kt")
             public void testOwnerDeclaresBothModifies() throws Exception {
                 String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/smartCasts/ownerDeclaresBothModifies.kt");

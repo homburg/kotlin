@@ -1,0 +1,11 @@
+package
+
+public final class MyClass {
+    public constructor MyClass(/*0*/ provider: (() -> kotlin.String)?)
+    public final val provider: (() -> kotlin.String)?
+    public final fun bar(/*0*/ s: kotlin.String): kotlin.String
+    public open override /*1*/ /*fake_override*/ fun equals(/*0*/ other: kotlin.Any?): kotlin.Boolean
+    public final fun foo(): kotlin.Unit
+    public open override /*1*/ /*fake_override*/ fun hashCode(): kotlin.Int
+    public open override /*1*/ /*fake_override*/ fun toString(): kotlin.String
+}
