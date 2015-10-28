@@ -96,10 +96,7 @@ abstract class AbstractLookupTrackerTest : AbstractIncrementalJpsTest(
         }
 
         for (actualFile in compiledFiles) {
-            if (!actualFile.isFile) continue
-
-            val independentFilePath = FileUtil.toSystemIndependentName(actualFile.path)
-            val expectedFile = File(testDataDir, independentFilePath.replace(".*/src/".toRegex(), ""))
+            val expectedFile = mapWorkingToOriginalFile[actualFile]!!
 
             checkLookupsInFile(expectedFile, actualFile)
         }

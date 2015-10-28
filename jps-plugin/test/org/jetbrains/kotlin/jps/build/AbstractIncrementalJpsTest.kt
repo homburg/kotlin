@@ -81,6 +81,8 @@ public abstract class AbstractIncrementalJpsTest(
 
     protected var projectDescriptor: ProjectDescriptor by Delegates.notNull()
 
+    protected val mapWorkingToOriginalFile: MutableMap<File, File> = hashMapOf()
+
     private fun enableDebugLogging() {
         com.intellij.openapi.diagnostic.Logger.setFactory(javaClass<TestLoggerFactory>())
         TestLoggerFactory.dumpLogToStdout("")
@@ -368,7 +370,7 @@ public abstract class AbstractIncrementalJpsTest(
 
         val modifications = getModificationsToPerform(moduleNames)
         for (step in modifications) {
-            step.forEach { it.perform(workDir) }
+            step.forEach { it.perform(workDir, mapWorkingToOriginalFile) }
             performAdditionalModifications(step)
             if (moduleNames == null) {
                 preProcessSources(File(workDir, "src"))
@@ -387,6 +389,17 @@ public abstract class AbstractIncrementalJpsTest(
 
     // null means one module
     private fun configureModules(): Set<String>? {
+
+        fun prepareSources(relativePathToSrc: String, filePrefix: String) {
+            val srcDir = File(workDir, relativePathToSrc)
+            FileUtil.copyDir(testDataDir, srcDir) { it.name.startsWith(filePrefix) && (it.name.endsWith(".kt") || it.name.endsWith(".java")) }
+
+            srcDir.walk().forEach { mapWorkingToOriginalFile[it] = File(testDataDir, filePrefix + it.name) }
+
+            preProcessSources(srcDir)
+
+        }
+
         var moduleNames: Set<String>?
         JpsJavaExtensionService.getInstance().getOrCreateProjectExtension(myProject).outputUrl = JpsPathUtil.pathToUrl(getAbsolutePath("out"))
 
@@ -395,10 +408,7 @@ public abstract class AbstractIncrementalJpsTest(
         if (moduleDependencies == null) {
             addModule("module", arrayOf(getAbsolutePath("src")), null, null, jdk)
 
-            val srcDir = File(workDir, "src")
-            FileUtil.copyDir(testDataDir, srcDir, { it.getName().endsWith(".kt") || it.getName().endsWith(".java") })
-
-            preProcessSources(srcDir)
+            prepareSources(relativePathToSrc = "src", filePrefix = "")
 
             moduleNames = null
         }
@@ -417,12 +427,7 @@ public abstract class AbstractIncrementalJpsTest(
 
             for (module in nameToModule.values()) {
                 val moduleName = module.name
-
-                val srcDir = File(workDir, "$moduleName/src")
-                FileUtil.copyDir(testDataDir, srcDir,
-                                 { it.getName().startsWith(moduleName + "_") && (it.getName().endsWith(".kt") || it.getName().endsWith(".java")) })
-
-                preProcessSources(srcDir)
+                prepareSources(relativePathToSrc = "$moduleName/src", filePrefix = moduleName + "_")
             }
 
             moduleNames = nameToModule.keySet()
@@ -460,13 +465,13 @@ public abstract class AbstractIncrementalJpsTest(
     }
 
     protected abstract class Modification(val path: String) {
-        abstract fun perform(workDir: File)
+        abstract fun perform(workDir: File, mapping: MutableMap<File, File>)
 
         override fun toString(): String = "${javaClass.simpleName} $path"
     }
 
     protected class ModifyContent(path: String, val dataFile: File) : Modification(path) {
-        override fun perform(workDir: File) {
+        override fun perform(workDir: File, mapping: MutableMap<File, File>) {
             val file = File(workDir, path)
 
             val oldLastModified = file.lastModified()
@@ -478,11 +483,13 @@ public abstract class AbstractIncrementalJpsTest(
                 //Mac OS and some versions of Linux truncate timestamp to nearest second
                 file.setLastModified(oldLastModified + 1000)
             }
+
+            mapping[file] = dataFile
         }
     }
 
     protected class TouchFile(path: String) : Modification(path) {
-        override fun perform(workDir: File) {
+        override fun perform(workDir: File, mapping: MutableMap<File, File>) {
             val file = File(workDir, path)
 
             val oldLastModified = file.lastModified()
@@ -492,11 +499,13 @@ public abstract class AbstractIncrementalJpsTest(
     }
 
     protected class DeleteFile(path: String) : Modification(path) {
-        override fun perform(workDir: File) {
+        override fun perform(workDir: File, mapping: MutableMap<File, File>) {
             val fileToDelete = File(workDir, path)
             if (!fileToDelete.delete()) {
                 throw AssertionError("Couldn't delete $fileToDelete")
             }
+
+            mapping.remove(fileToDelete)
         }
     }
 }
