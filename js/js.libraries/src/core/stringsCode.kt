@@ -57,19 +57,6 @@ public fun String?.equals(anotherString: String?, ignoreCase: Boolean = false): 
 public fun CharSequence.regionMatches(thisOffset: Int, other: CharSequence, otherOffset: Int, length: Int, ignoreCase: Boolean = false): Boolean
         = regionMatchesImpl(thisOffset, other, otherOffset, length, ignoreCase)
 
-fun CharSequence.regionMatchesImpl(thisOffset: Int, other: CharSequence, otherOffset: Int, length: Int, ignoreCase: Boolean): Boolean {
-    if ((otherOffset < 0) || (thisOffset < 0) || (thisOffset > length() - length)
-        || (otherOffset > other.length() - length)) {
-        return false;
-    }
-
-    for (index in 0..length - 1) {
-        if (!this[thisOffset + index].equals(other[otherOffset + index], ignoreCase))
-            return false
-    }
-    return true
-}
-
 
 /**
  * Returns a copy of this string capitalised if it is not empty or already starting with an uppper case letter, otherwise returns this

@@ -313,20 +313,6 @@ public fun CharSequence.regionMatches(thisOffset: Int, other: CharSequence, othe
         return regionMatchesImpl(thisOffset, other, otherOffset, length, ignoreCase)
 }
 
-
-internal fun CharSequence.regionMatchesImpl(thisOffset: Int, other: CharSequence, otherOffset: Int, length: Int, ignoreCase: Boolean): Boolean {
-    if ((otherOffset < 0) || (thisOffset < 0) || (thisOffset > length() - length)
-            || (otherOffset > other.length() - length)) {
-        return false;
-    }
-
-    for (index in 0..length-1) {
-        if (!this[thisOffset + index].equals(other[otherOffset + index], ignoreCase))
-            return false
-    }
-    return true
-}
-
 /**
  * Returns `true` if the specified range in this string is equal to the specified range in another string.
  * @param thisOffset the start offset in this string of the substring to compare.

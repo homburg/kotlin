@@ -542,6 +542,22 @@ public fun CharSequence.replaceFirst(regex: Regex, replacement: String): String 
  */
 public fun CharSequence.matches(regex: Regex): Boolean = regex.matches(this)
 
+/**
+ * Implementation of [regionMatches] for CharSequences.
+ * Invoked when it's already known that arguments are not Strings, so that no additional type checks are performed.
+ */
+internal fun CharSequence.regionMatchesImpl(thisOffset: Int, other: CharSequence, otherOffset: Int, length: Int, ignoreCase: Boolean): Boolean {
+    if ((otherOffset < 0) || (thisOffset < 0) || (thisOffset > this.length - length)
+            || (otherOffset > other.length - length)) {
+        return false;
+    }
+
+    for (index in 0..length-1) {
+        if (!this[thisOffset + index].equals(other[otherOffset + index], ignoreCase))
+            return false
+    }
+    return true
+}
 
 /**
  * Returns `true` if this char sequence starts with the specified character.
