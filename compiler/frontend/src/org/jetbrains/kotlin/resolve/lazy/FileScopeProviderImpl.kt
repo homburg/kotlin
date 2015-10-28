@@ -70,6 +70,7 @@ public open class FileScopeProviderImpl(
         else
             file.getImportDirectives()
 
+
         val packageView = moduleDescriptor.getPackage(file.getPackageFqName())
         val packageFragment = topLevelDescriptorProvider.getPackageFragment(file.getPackageFqName())
                 .sure { "Could not find fragment ${file.getPackageFqName()} for file ${file.getName()}" }
