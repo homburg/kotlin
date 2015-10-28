@@ -287,6 +287,12 @@ public class QuickFixMultiFileTestGenerated extends AbstractQuickFixMultiFileTes
             doTestWithExtraFile(fileName);
         }
 
+        @TestMetadata("noImportForRoot.test")
+        public void testNoImportForRoot() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("idea/testData/quickfix/autoImports/noImportForRoot.test");
+            doTestWithExtraFile(fileName);
+        }
+
         @TestMetadata("noImportInImports.before.Main.kt")
         public void testNoImportInImports() throws Exception {
             String fileName = JetTestUtils.navigationMetadata("idea/testData/quickfix/autoImports/noImportInImports.before.Main.kt");
