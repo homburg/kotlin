@@ -20,7 +20,6 @@ import com.intellij.psi.impl.light.LightMethod
 import com.intellij.psi.*
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.idea.KotlinLanguage
-import kotlin.properties.Delegates
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.CachedValueProvider
@@ -28,6 +27,7 @@ import com.intellij.psi.util.CachedValue
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import com.intellij.psi.search.SearchScope
 import com.intellij.lang.Language
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.util.MethodSignature
 import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
@@ -82,6 +82,9 @@ open public class KotlinLightMethodForDeclaration(
             visitor.visitElement(this)
         }
     }
+
+    override fun getText() = origin.text
+    override fun getTextRange() = origin.textRange
 
     override fun setName(name: String): PsiElement? {
         (origin as PsiNamedElement).setName(name)
