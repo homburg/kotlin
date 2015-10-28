@@ -16,17 +16,16 @@
 
 package org.jetbrains.kotlin.load.kotlin
 
-import org.jetbrains.kotlin.descriptors.FileSystemKind
+import org.jetbrains.kotlin.descriptors.FileSystemProtocol
 import org.jetbrains.kotlin.descriptors.SourceFile
 
-internal class BinarySourceFile(kotlinBinaryClasses: List<KotlinJvmBinaryClass>) : SourceFile {
-    private val fsKind by lazy {
-        if (kotlinBinaryClasses.isEmpty()) return@lazy FileSystemKind.UNDEFINED
+internal class BinarySourceFile(kotlinBinaryClasses: Collection<KotlinJvmBinaryClass>) : SourceFile {
+    private val fsProtocol = run {
+        if (kotlinBinaryClasses.isEmpty()) return@run FileSystemProtocol.UNDEFINED
 
-        kotlinBinaryClasses.fold(kotlinBinaryClasses[0].fileSystemKind) { fsKind, b ->
-            if (fsKind == b.fileSystemKind) fsKind else return@lazy FileSystemKind.UNDEFINED
-        }
+        val firstFsProtocol = kotlinBinaryClasses.first().fileSystemProtocol
+        if (kotlinBinaryClasses.all { it.fileSystemProtocol == firstFsProtocol }) firstFsProtocol else FileSystemProtocol.UNDEFINED
     }
 
-    override fun getFileSystemKind(): FileSystemKind = fsKind
+    override fun getFileSystemProtocol(): FileSystemProtocol = fsProtocol
 }

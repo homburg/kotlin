@@ -18,7 +18,7 @@ package org.jetbrains.kotlin.incremental
 
 import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithSource
-import org.jetbrains.kotlin.descriptors.FileSystemKind
+import org.jetbrains.kotlin.descriptors.FileSystemProtocol
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.incremental.components.LookupTracker
@@ -36,7 +36,7 @@ public fun LookupTracker.record(from: LookupLocation, inScope: KtScope, name: Na
     val scopeContainingDeclaration = inScope.getContainingDeclaration()
 
     if (scopeContainingDeclaration is DeclarationDescriptorWithSource &&
-        scopeContainingDeclaration.source.containingFile.fileSystemKind == FileSystemKind.JAR) return
+        scopeContainingDeclaration.source.containingFile.fileSystemProtocol == FileSystemProtocol.JAR) return
 
     val scopeKind =
             when (scopeContainingDeclaration) {

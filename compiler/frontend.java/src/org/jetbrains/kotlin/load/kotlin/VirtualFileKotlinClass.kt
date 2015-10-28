@@ -20,7 +20,7 @@ import com.intellij.ide.highlighter.JavaClassFileType
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.kotlin.descriptors.FileSystemKind
+import org.jetbrains.kotlin.descriptors.FileSystemProtocol
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.util.PerformanceCounter
@@ -34,11 +34,12 @@ public class VirtualFileKotlinClass private constructor(
         classHeader: KotlinClassHeader,
         innerClasses: FileBasedKotlinClass.InnerClassesInfo
 ) : FileBasedKotlinClass(className, classHeader, innerClasses) {
-    override fun getFileSystemKind(): FileSystemKind {
-        if (file.fileSystem.protocol == StandardFileSystems.JAR_PROTOCOL) return FileSystemKind.JAR
-
-        return FileSystemKind.UNDEFINED
-    }
+    override fun getFileSystemProtocol() =
+            when(file.fileSystem.protocol) {
+                StandardFileSystems.FILE_PROTOCOL -> FileSystemProtocol.FILE
+                StandardFileSystems.JAR_PROTOCOL -> FileSystemProtocol.JAR
+                else -> FileSystemProtocol.UNDEFINED
+            }
 
     override fun getLocation() = file.getPath()
 

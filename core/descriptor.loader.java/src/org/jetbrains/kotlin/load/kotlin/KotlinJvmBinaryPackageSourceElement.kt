@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.serialization.deserialization.descriptors.Deserializ
 
 class KotlinJvmBinaryPackageSourceElement(
         private val jPackage: JavaPackage,
-        private val kotlinBinaryClasses: List<KotlinJvmBinaryClass>
+        kotlinBinaryClasses: List<KotlinJvmBinaryClass>
 ) : SourceElement {
     private val implClassNameToBinaryClass = run {
         val result = hashMapOf<String, KotlinJvmBinaryClass>()
@@ -36,7 +36,7 @@ class KotlinJvmBinaryPackageSourceElement(
     }
 
     override fun toString(): String = "Binary package ${jPackage.getFqName()}: ${implClassNameToBinaryClass.keys}"
-    override fun getContainingFile(): SourceFile = BinarySourceFile(kotlinBinaryClasses)
+    override fun getContainingFile(): SourceFile = BinarySourceFile(implClassNameToBinaryClass.values)
 
     public fun getRepresentativeBinaryClass(): KotlinJvmBinaryClass {
         return implClassNameToBinaryClass.values.first()

@@ -18,7 +18,7 @@ package org.jetbrains.kotlin.resolve.source
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.jetbrains.kotlin.descriptors.FileSystemKind
+import org.jetbrains.kotlin.descriptors.FileSystemProtocol
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.descriptors.SourceFile
 
@@ -29,7 +29,7 @@ public interface PsiSourceElement : SourceElement {
 }
 
 public class PsiSourceFile(private val psiFile: PsiFile): SourceFile {
-    override fun getFileSystemKind(): FileSystemKind = FileSystemKind.UNDEFINED
+    override fun getFileSystemProtocol(): FileSystemProtocol = FileSystemProtocol.FILE
 
     override fun equals(other: Any?): Boolean = other is PsiSourceFile && psiFile == other.psiFile
     override fun hashCode(): Int = psiFile.hashCode()

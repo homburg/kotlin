@@ -22,11 +22,11 @@ public interface SourceFile {
     SourceFile NO_SOURCE_FILE = new SourceFile() {
         @NotNull
         @Override
-        public FileSystemKind getFileSystemKind() {
-            return FileSystemKind.UNDEFINED;
+        public FileSystemProtocol getFileSystemProtocol() {
+            return FileSystemProtocol.UNDEFINED;
         }
     };
 
     @NotNull
-    FileSystemKind getFileSystemKind();
+    FileSystemProtocol getFileSystemProtocol();
 }

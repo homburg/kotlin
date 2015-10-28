@@ -16,7 +16,7 @@
 
 package org.jetbrains.kotlin.load.kotlin.reflect
 
-import org.jetbrains.kotlin.descriptors.FileSystemKind
+import org.jetbrains.kotlin.descriptors.FileSystemProtocol
 import org.jetbrains.kotlin.load.java.structure.reflect.classId
 import org.jetbrains.kotlin.load.java.structure.reflect.desc
 import org.jetbrains.kotlin.load.java.structure.reflect.isEnumClassOrSpecializedEnumEntryClass
@@ -60,8 +60,8 @@ public class ReflectKotlinClass private constructor(
 
     override fun getClassHeader() = classHeader
 
-    override fun getFileSystemKind(): FileSystemKind {
-        return FileSystemKind.UNDEFINED
+    override fun getFileSystemProtocol(): FileSystemProtocol {
+        return FileSystemProtocol.UNDEFINED
     }
 
     override fun loadClassAnnotations(visitor: KotlinJvmBinaryClass.AnnotationVisitor) {

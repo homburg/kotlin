@@ -18,7 +18,7 @@ package org.jetbrains.kotlin.load.kotlin;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.kotlin.descriptors.FileSystemKind;
+import org.jetbrains.kotlin.descriptors.FileSystemProtocol;
 import org.jetbrains.kotlin.descriptors.SourceElement;
 import org.jetbrains.kotlin.load.kotlin.header.KotlinClassHeader;
 import org.jetbrains.kotlin.name.ClassId;
@@ -42,7 +42,7 @@ public interface KotlinJvmBinaryClass {
     KotlinClassHeader getClassHeader();
 
     @NotNull
-    FileSystemKind getFileSystemKind();
+    FileSystemProtocol getFileSystemProtocol();
 
     interface MemberVisitor {
         // TODO: abstract signatures for methods and fields instead of ASM 'desc' strings?

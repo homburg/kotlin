@@ -16,7 +16,8 @@
 
 package org.jetbrains.kotlin.descriptors;
 
-public enum FileSystemKind {
+public enum FileSystemProtocol {
     UNDEFINED,
+    FILE,
     JAR
 }
