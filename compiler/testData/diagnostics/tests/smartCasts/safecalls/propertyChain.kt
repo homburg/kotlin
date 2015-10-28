@@ -7,3 +7,8 @@ fun foo(y: MyClass?): Int {
     y!!.x
     return z?.length ?: -1
 }
+fun bar(y: MyClass?) {
+    y?.x!!.length
+    // !! is necessary here
+    y!!.x
+}
