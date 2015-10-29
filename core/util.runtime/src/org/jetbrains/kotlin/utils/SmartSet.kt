@@ -42,11 +42,11 @@ class SmartSet<T> private constructor() : AbstractSet<T>() {
     override var size: Int = 0
 
     override fun iterator(): MutableIterator<T> = when {
-            size == 0 -> Collections.emptySet<T>().iterator()
-            size == 1 -> SingletonIterator(data as T)
-            size < ARRAY_THRESHOLD -> ArrayIterator(data as Array<T>)
-            else -> (data as MutableSet<T>).iterator()
-        }
+        size == 0 -> Collections.emptySet<T>().iterator()
+        size == 1 -> SingletonIterator(data as T)
+        size < ARRAY_THRESHOLD -> ArrayIterator(data as Array<T>)
+        else -> (data as MutableSet<T>).iterator()
+    }
 
     override fun add(e: T): Boolean {
         when {
@@ -85,7 +85,7 @@ class SmartSet<T> private constructor() : AbstractSet<T>() {
         else -> o in data as Set<T>
     }
 
-    private class SingletonIterator<T>(private val element: T) : MutableIterator<T> {
+    private inner class SingletonIterator<T>(private val element: T) : MutableIterator<T> {
         private var hasNext = true
 
         override fun next(): T =
@@ -97,14 +97,27 @@ class SmartSet<T> private constructor() : AbstractSet<T>() {
 
         override fun hasNext() = hasNext
 
-        override fun remove() = throw UnsupportedOperationException()
+        override fun remove() {
+            assert(size == 1) { "Usage of SingletonIterator with non-singleton set: ${size}" }
+            clear()
+        }
     }
 
-    private class ArrayIterator<T>(array: Array<T>) : MutableIterator<T> {
-        private val arrayIterator = array.iterator()
+    private inner class ArrayIterator<T>(private val array: Array<T>) : MutableIterator<T> {
+        private var index = 0
 
-        override fun hasNext(): Boolean = arrayIterator.hasNext()
-        override fun next(): T = arrayIterator.next()
-        override fun remove() = throw UnsupportedOperationException()
+        override fun hasNext(): Boolean = index < array.size
+        override fun next(): T = array[index++]
+        override fun remove() {
+            size--
+
+            if (size == 1) {
+                data = array[index]
+            }
+            else {
+                System.arraycopy(array, index, array, index - 1, array.size - index)
+                index--
+            }
+        }
     }
 }
