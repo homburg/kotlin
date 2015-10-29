@@ -135,4 +135,9 @@ public class KotlinLightParameter extends LightParameter implements KotlinLightE
     public KotlinLightMethod getMethod() {
         return method;
     }
+
+    @Override
+    public String getText() {
+        return "";
+    }
 }

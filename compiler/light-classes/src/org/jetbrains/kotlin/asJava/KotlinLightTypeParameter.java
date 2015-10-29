@@ -80,6 +80,11 @@ public class KotlinLightTypeParameter
         }
     }
 
+    @Override
+    public String getText() {
+        return "";
+    }
+
     @Nullable
     @Override
     public String getName() {

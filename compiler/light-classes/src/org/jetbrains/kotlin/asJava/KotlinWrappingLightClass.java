@@ -178,7 +178,7 @@ public abstract class KotlinWrappingLightClass extends AbstractLightClass implem
     @Override
     public String getText() {
         KtClassOrObject origin = getOrigin();
-        return origin == null ? null : origin.getText();
+        return origin == null ? "" : origin.getText();
     }
 
     @NotNull
