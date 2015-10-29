@@ -11,9 +11,12 @@ import bar.*
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A*/B()./*c:foo.A.B*/a
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A*/B./*c:foo.A.B c:foo.A.B.CO*/bar(1)
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A*/B./*c:foo.A.B*/CO./*c:foo.A.B.CO*/bar(1)
+    /*p:foo p:bar p:java.lang p:kotlin.annotation*/A
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A c:foo.A.Companion*/a
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A c:foo.A.Companion*/baz()
+    /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A*/Companion
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A*/Companion./*c:foo.A.Companion*/baz()
+    /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A*/O
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/A./*c:foo.A*/O./*c:foo.A.O*/v = "OK"
     i./*c:foo.I*/a = 2
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/Obj./*c:foo.Obj*/a
@@ -28,3 +31,7 @@ import bar.*
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/E./*c:foo.E*/X./*c:foo.E*/a
     /*p:foo p:bar p:java.lang p:kotlin.annotation*/E./*c:foo.E*/Y./*c:foo.E*/foo()
 }
+
+/*p:foo*/fun <T : /*p:foo*/A?, B : /*p:foo*/Iterable</*p:foo*/Number>, C> test()
+    where C : /*p:foo*/Number, C : /*p:foo*/Comparable</*p:foo*/Number>, C : B
+{}
