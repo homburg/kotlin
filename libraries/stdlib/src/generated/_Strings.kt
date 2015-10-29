@@ -505,31 +505,29 @@ public inline fun String.dropWhile(predicate: (Char) -> Boolean): String {
 }
 
 /**
- * Returns a string containing only those characters from the original string that match the given [predicate].
+ * Returns a char sequence containing only those characters from the original char sequence that match the given [predicate].
  */
-public inline fun CharSequence.filter(predicate: (Char) -> Boolean): String {
-    return filterTo(StringBuilder(), predicate).toString()
+public inline fun CharSequence.filter(predicate: (Char) -> Boolean): CharSequence {
+    return filterTo(StringBuilder(), predicate)
 }
 
 /**
- * Returns a list containing all elements matching the given [predicate].
+ * Returns a string containing only those characters from the original string that match the given [predicate].
  */
-@Deprecated("Provided for binary compatibility", level = DeprecationLevel.HIDDEN)
 public inline fun String.filter(predicate: (Char) -> Boolean): String {
     return filterTo(StringBuilder(), predicate).toString()
 }
 
 /**
- * Returns a string containing only those characters from the original string that do not match the given [predicate].
+ * Returns a char sequence containing only those characters from the original char sequence that do not match the given [predicate].
  */
-public inline fun CharSequence.filterNot(predicate: (Char) -> Boolean): String {
+public inline fun CharSequence.filterNot(predicate: (Char) -> Boolean): CharSequence {
     return filterNotTo(StringBuilder(), predicate).toString()
 }
 
 /**
- * Returns a list containing all elements not matching the given [predicate].
+ * Returns a string containing only those characters from the original string that do not match the given [predicate].
  */
-@Deprecated("Provided for binary compatibility", level = DeprecationLevel.HIDDEN)
 public inline fun String.filterNot(predicate: (Char) -> Boolean): String {
     return filterNotTo(StringBuilder(), predicate).toString()
 }
@@ -575,7 +573,15 @@ public inline fun <C : Appendable> String.filterTo(destination: C, predicate: (C
 }
 
 /**
- * Returns a string containing characters at indices at the specified [indices].
+ * Returns a char sequence containing characters of the original char sequence at the specified range of [indices].
+ */
+public fun CharSequence.slice(indices: IntRange): CharSequence {
+    if (indices.isEmpty()) return ""
+    return subSequence(indices)
+}
+
+/**
+ * Returns a string containing characters of the original string at the specified range of [indices].
  */
 public fun String.slice(indices: IntRange): String {
     if (indices.isEmpty()) return ""
@@ -583,7 +589,20 @@ public fun String.slice(indices: IntRange): String {
 }
 
 /**
- * Returns a string containing characters at specified [indices].
+ * Returns a char sequence containing characters of the original char sequence at specified [indices].
+ */
+public fun CharSequence.slice(indices: Iterable<Int>): CharSequence {
+    val size = indices.collectionSizeOrDefault(10)
+    if (size == 0) return ""
+    val result = StringBuilder(size)
+    for (i in indices) {
+        result.append(get(i))
+    }
+    return result
+}
+
+/**
+ * Returns a string containing characters of the original string at specified [indices].
  */
 public fun String.slice(indices: Iterable<Int>): String {
     val size = indices.collectionSizeOrDefault(10)

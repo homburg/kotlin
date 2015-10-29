@@ -205,24 +205,6 @@ public fun CharSequence.hasSurrogatePairAt(index: Int): Boolean {
 }
 
 /**
- * Returns a subsequence obtained by taking the characters at the given [indices] in this sequence.
- */
-public fun CharSequence.slice(indices: Iterable<Int>): CharSequence {
-    val sb = StringBuilder()
-    for (i in indices) {
-        sb.append(get(i))
-    }
-    return sb.toString()
-}
-
-/**
- * Returns a subsequence of this sequence specified by given [range].
- */
-public fun CharSequence.slice(range: IntRange): CharSequence {
-    return subSequence(range.start, range.end + 1) // inclusive
-}
-
-/**
  * Returns a substring specified by the given [range].
  */
 public fun String.substring(range: Range<Int>): String = substring(range.start, range.end + 1)
@@ -397,25 +379,59 @@ public fun CharSequence.removeRange(firstIndex: Int, lastIndex: Int): String {
 public fun CharSequence.removeRange(range: Range<Int>): String = removeRange(range.start, range.end + 1)
 
 /**
+ * If this char sequence starts with the given [prefix], returns a new char sequence
+ * with the prefix removed. Otherwise, returns a new char sequence with the same characters.
+ */
+public fun CharSequence.removePrefix(prefix: CharSequence): CharSequence {
+    if (startsWith(prefix)) {
+        return subSequence(prefix.length, length)
+    }
+    return subSequence(0, length)
+}
+
+/**
  * If this string starts with the given [prefix], returns a copy of this string
  * with the prefix removed. Otherwise, returns this string.
  */
-public fun String.removePrefix(prefix: String): String {
+public fun String.removePrefix(prefix: CharSequence): String {
     if (startsWith(prefix)) {
-        return substring(prefix.length())
+        return substring(prefix.length)
     }
     return this
+}
+
+/**
+ * If this char sequence ends with the given [suffix], returns a new char sequence
+ * with the suffix removed. Otherwise, returns a new char sequence with the same characters.
+ */
+public fun CharSequence.removeSuffix(suffix: CharSequence): CharSequence {
+    if (endsWith(suffix)) {
+        return subSequence(0, length - suffix.length)
+    }
+    return subSequence(0, length)
 }
 
 /**
  * If this string ends with the given [suffix], returns a copy of this string
  * with the suffix removed. Otherwise, returns this string.
  */
-public fun String.removeSuffix(suffix: String): String {
+public fun String.removeSuffix(suffix: CharSequence): String {
     if (endsWith(suffix)) {
-        return substring(0, length() - suffix.length())
+        return substring(0, length - suffix.length)
     }
     return this
+}
+
+/**
+ * When this char sequence starts with the given [prefix] and ends with the given [suffix],
+ * returns a new char sequence having both the given [prefix] and [suffix] removed.
+ * Otherwise returns a new char sequence with the same characters.
+ */
+public fun CharSequence.removeSurrounding(prefix: CharSequence, suffix: CharSequence): CharSequence {
+    if (startsWith(prefix) && endsWith(suffix)) {
+        return subSequence(prefix.length, length - suffix.length)
+    }
+    return subSequence(0, length)
 }
 
 /**
@@ -423,19 +439,26 @@ public fun String.removeSuffix(suffix: String): String {
  * it starts with the [prefix] and ends with the [suffix].
  * Otherwise returns this string unchanged.
  */
-public fun String.removeSurrounding(prefix: String, suffix: String): String {
+public fun String.removeSurrounding(prefix: CharSequence, suffix: CharSequence): String {
     if (startsWith(prefix) && endsWith(suffix)) {
-        return substring(prefix.length(), length() - suffix.length())
+        return substring(prefix.length, length - suffix.length)
     }
     return this
 }
+
+/**
+ * When this char sequence starts with and ends with the given [delimiter],
+ * returns a new char sequence having this [delimiter] removed both from the start and end.
+ * Otherwise returns a new char sequence with the same characters.
+ */
+public fun CharSequence.removeSurrounding(delimiter: CharSequence): CharSequence = removeSurrounding(delimiter, delimiter)
 
 /**
  * Removes the given [delimiter] string from both the start and the end of this string
  * if and only if it starts with and ends with the [delimiter].
  * Otherwise returns this string unchanged.
  */
-public fun String.removeSurrounding(delimiter: String): String = removeSurrounding(delimiter, delimiter)
+public fun String.removeSurrounding(delimiter: CharSequence): String = removeSurrounding(delimiter, delimiter)
 
 /**
  * Replace part of string before the first occurrence of given delimiter with the [replacement] string.

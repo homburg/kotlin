@@ -25,8 +25,8 @@ fun withTwoCharSequenceArgs(f: ((String) -> CharSequence, (String) -> CharSequen
             f(arg1Builder, arg2Builder)
 }
 
-fun assertContentEquals(expected: String, actual: CharSequence) {
-    assertEquals(expected, actual.toString())
+fun assertContentEquals(expected: String, actual: CharSequence, message: String? = null) {
+    assertEquals(expected, actual.toString(), message)
 }
 
 // helper predicates available on both platforms
@@ -408,28 +408,59 @@ class StringTest {
         }
     }
 
-    @test fun removePrefix() {
-        assertEquals("fix", "prefix".removePrefix("pre"), "Removes prefix")
-        assertEquals("prefix", "preprefix".removePrefix("pre"), "Removes prefix once")
-        assertEquals("sample", "sample".removePrefix("value"))
+    @test fun removePrefix() = withOneCharSequenceArg("pre") { prefix ->
+        assertEquals("fix", "prefix".removePrefix(prefix), "Removes prefix")
+        assertEquals("prefix", "preprefix".removePrefix(prefix), "Removes prefix once")
+        assertEquals("sample", "sample".removePrefix(prefix))
         assertEquals("sample", "sample".removePrefix(""))
     }
 
-    @test fun removeSuffix() {
-        assertEquals("suf", "suffix".removeSuffix("fix"), "Removes suffix")
-        assertEquals("suffix", "suffixfix".removeSuffix("fix"), "Removes suffix once")
-        assertEquals("sample", "sample".removeSuffix("value"))
+    @test fun removeSuffix() = withOneCharSequenceArg("fix") { suffix ->
+        assertEquals("suf", "suffix".removeSuffix(suffix), "Removes suffix")
+        assertEquals("suffix", "suffixfix".removeSuffix(suffix), "Removes suffix once")
+        assertEquals("sample", "sample".removeSuffix(suffix))
         assertEquals("sample", "sample".removeSuffix(""))
     }
 
-    @test fun removeSurrounding() {
-        assertEquals("value", "<value>".removeSurrounding("<", ">"))
-        assertEquals("<value>", "<<value>>".removeSurrounding("<", ">"), "Removes surrounding once")
-        assertEquals("<value", "<value".removeSurrounding("<", ">"), "Only removes surrounding when both prefix and suffix present")
-        assertEquals("value>", "value>".removeSurrounding("<", ">"), "Only removes surrounding when both prefix and suffix present")
-        assertEquals("value", "value".removeSurrounding("<", ">"))
+    @test fun removeSurrounding() = withOneCharSequenceArg { arg1 ->
+        val pre = arg1("<")
+        val post = arg1(">")
+        assertEquals("value", "<value>".removeSurrounding(pre, post))
+        assertEquals("<value>", "<<value>>".removeSurrounding(pre, post), "Removes surrounding once")
+        assertEquals("<value", "<value".removeSurrounding(pre, post), "Only removes surrounding when both prefix and suffix present")
+        assertEquals("value>", "value>".removeSurrounding(pre, post), "Only removes surrounding when both prefix and suffix present")
+        assertEquals("value", "value".removeSurrounding(pre, post))
     }
 
+    @test fun removePrefixCharSequence() = withTwoCharSequenceArgs { arg1, arg2 ->
+        fun String.removePrefix(prefix: String) = arg1(this).removePrefix(arg2(prefix))
+        val prefix = "pre"
+
+        assertContentEquals("fix", "prefix".removePrefix(prefix), "Removes prefix")
+        assertContentEquals("prefix", "preprefix".removePrefix(prefix), "Removes prefix once")
+        assertContentEquals("sample", "sample".removePrefix(prefix))
+        assertContentEquals("sample", "sample".removePrefix(""))
+    }
+
+    @test fun removeSuffixCharSequence() = withTwoCharSequenceArgs { arg1, arg2 ->
+        fun String.removeSuffix(suffix: String) = arg1(this).removeSuffix(arg2(suffix))
+        val suffix = "fix"
+
+        assertContentEquals("suf", "suffix".removeSuffix(suffix), "Removes suffix")
+        assertContentEquals("suffix", "suffixfix".removeSuffix(suffix), "Removes suffix once")
+        assertContentEquals("sample", "sample".removeSuffix(suffix))
+        assertContentEquals("sample", "sample".removeSuffix(""))
+    }
+
+    @test fun removeSurroundingCharSequence() = withTwoCharSequenceArgs { arg1, arg2 ->
+        fun String.removeSurrounding(prefix: String, postfix: String) = arg1(this).removeSurrounding(arg2(prefix), arg2(postfix))
+
+        assertContentEquals("value", "<value>".removeSurrounding("<", ">"))
+        assertContentEquals("<value>", "<<value>>".removeSurrounding("<", ">"), "Removes surrounding once")
+        assertContentEquals("<value", "<value".removeSurrounding("<", ">"), "Only removes surrounding when both prefix and suffix present")
+        assertContentEquals("value>", "value>".removeSurrounding("<", ">"), "Only removes surrounding when both prefix and suffix present")
+        assertContentEquals("value", "value".removeSurrounding("<", ">"))
+    }
 
     /*
     // unit test commented out until rangesDelimitiedBy would become public
@@ -685,14 +716,24 @@ class StringTest {
     }
 
 
-    @test fun filter() = withOneCharSequenceArg { arg1 ->
-        assertEquals("acdca", arg1("abcdcba").filter { !it.equals('b') })
-        assertEquals("1234", arg1("a1b2c3d4").filter { it.isAsciiDigit() })
+    @test fun filter() {
+        assertEquals("acdca", ("abcdcba").filter { !it.equals('b') })
+        assertEquals("1234", ("a1b2c3d4").filter { it.isAsciiDigit() })
     }
 
-    @test fun filterNot() = withOneCharSequenceArg { arg1 ->
-        assertEquals("acdca", arg1("abcdcba").filterNot { it.equals('b') })
-        assertEquals("abcd", arg1("a1b2c3d4").filterNot { it.isAsciiDigit() })
+    @test fun filterCharSequence() = withOneCharSequenceArg { arg1 ->
+        assertContentEquals("acdca", arg1("abcdcba").filter { !it.equals('b') })
+        assertContentEquals("1234", arg1("a1b2c3d4").filter { it.isAsciiDigit() })
+    }
+
+    @test fun filterNot() {
+        assertEquals("acdca", ("abcdcba").filterNot { it.equals('b') })
+        assertEquals("abcd", ("a1b2c3d4").filterNot { it.isAsciiDigit() })
+    }
+
+    @test fun filterNotCharSequence() = withOneCharSequenceArg { arg1 ->
+        assertContentEquals("acdca", arg1("abcdcba").filterNot { it.equals('b') })
+        assertContentEquals("abcd", arg1("a1b2c3d4").filterNot { it.isAsciiDigit() })
     }
 
     @test fun all() = withOneCharSequenceArg("AbCd") { data ->
