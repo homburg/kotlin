@@ -67,6 +67,7 @@ public fun createContainerForBodyResolve(
     useInstance(BodyResolveCache.ThrowException)
 
     useImpl<BodyResolver>()
+    useImpl<SupertypeLoopsResolverImpl>()
 }
 
 public fun createContainerForLazyBodyResolve(
@@ -80,6 +81,7 @@ public fun createContainerForLazyBodyResolve(
     useInstance(kotlinCodeAnalyzer.getFileScopeProvider())
     useInstance(bodyResolveCache)
     useImpl<LazyTopDownAnalyzerForTopLevel>()
+    useImpl<SupertypeLoopsResolverImpl>()
 }
 
 public fun createContainerForLazyLocalClassifierAnalyzer(
@@ -102,6 +104,7 @@ public fun createContainerForLazyLocalClassifierAnalyzer(
 
     useImpl<DeclarationScopeProviderForLocalClassifierAnalyzer>()
     useImpl<LocalLazyDeclarationResolver>()
+    useImpl<SupertypeLoopsResolverImpl>()
 }
 
 public fun createContainerForLazyResolve(
@@ -120,6 +123,7 @@ public fun createContainerForLazyResolve(
 
     useImpl<LazyResolveToken>()
     useImpl<ResolveSession>()
+    useImpl<SupertypeLoopsResolverImpl>()
 }
 
 @JvmOverloads

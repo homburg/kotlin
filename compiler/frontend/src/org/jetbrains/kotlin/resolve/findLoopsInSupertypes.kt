@@ -17,6 +17,7 @@
 @file:JvmName("FindLoopsInSupertypes")
 package org.jetbrains.kotlin.resolve
 
+import org.jetbrains.kotlin.descriptors.SupertypeLoopsResolver
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeConstructor
 import org.jetbrains.kotlin.utils.DFS
@@ -58,4 +59,14 @@ private fun isReachable(
     })
 
     return result
+}
+
+class SupertypeLoopsResolverImpl : SupertypeLoopsResolver {
+    override fun findLoopsInSupertypesAndDisconnect(
+            currentTypeConstructor: TypeConstructor,
+            superTypes: MutableCollection<KotlinType>,
+            neighbors: (TypeConstructor) -> Iterable<KotlinType>,
+            reportCycle: (KotlinType) -> Unit
+    ) = org.jetbrains.kotlin.resolve.findLoopsInSupertypesAndDisconnect(
+            currentTypeConstructor, superTypes, neighbors, reportCycle)
 }

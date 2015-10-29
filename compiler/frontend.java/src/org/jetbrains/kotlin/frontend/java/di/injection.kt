@@ -66,6 +66,7 @@ public fun StorageComponentContainer.configureJavaTopDownAnalysis(moduleContentS
     useImpl<JavaLazyAnalyzerPostConstruct>()
     useImpl<JavaFlexibleTypeCapabilitiesProvider>()
     useImpl<AdditionalScopesWithJavaSyntheticExtensions>()
+    useImpl<SupertypeLoopsResolverImpl>()
 }
 
 public fun createContainerForLazyResolveWithJava(

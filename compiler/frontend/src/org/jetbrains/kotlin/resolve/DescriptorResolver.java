@@ -78,6 +78,7 @@ public class DescriptorResolver {
     @NotNull private final StorageManager storageManager;
     @NotNull private final KotlinBuiltIns builtIns;
     @NotNull private final ConstantExpressionEvaluator constantExpressionEvaluator;
+    @NotNull private final SupertypeLoopsResolver supertypeLoopsResolver;
 
     public DescriptorResolver(
             @NotNull AnnotationResolver annotationResolver,
@@ -86,7 +87,8 @@ public class DescriptorResolver {
             @NotNull ExpressionTypingServices expressionTypingServices,
             @NotNull StorageManager storageManager,
             @NotNull TypeResolver typeResolver,
-            @NotNull ConstantExpressionEvaluator constantExpressionEvaluator
+            @NotNull ConstantExpressionEvaluator constantExpressionEvaluator,
+            @NotNull SupertypeLoopsResolver supertypeLoopsResolver
     ) {
         this.annotationResolver = annotationResolver;
         this.builtIns = builtIns;
@@ -95,6 +97,7 @@ public class DescriptorResolver {
         this.storageManager = storageManager;
         this.typeResolver = typeResolver;
         this.constantExpressionEvaluator = constantExpressionEvaluator;
+        this.supertypeLoopsResolver = supertypeLoopsResolver;
     }
 
     public List<KotlinType> resolveSupertypes(

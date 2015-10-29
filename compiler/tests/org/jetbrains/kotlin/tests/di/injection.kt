@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.frontend.di.configureModule
 import org.jetbrains.kotlin.resolve.DescriptorResolver
 import org.jetbrains.kotlin.resolve.FunctionDescriptorResolver
+import org.jetbrains.kotlin.resolve.SupertypeLoopsResolverImpl
 import org.jetbrains.kotlin.resolve.TypeResolver
 import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
 import org.jetbrains.kotlin.types.expressions.ExpressionTypingServices
@@ -34,6 +35,7 @@ import org.jetbrains.kotlin.types.expressions.FakeCallResolver
 public fun createContainerForTests(project: Project, module: ModuleDescriptor): ContainerForTests {
     return ContainerForTests(createContainer("Tests") {
         configureModule(ModuleContext(module, project), JvmPlatform)
+        useImpl<SupertypeLoopsResolverImpl>()
         useImpl<ExpressionTypingServices>()
     })
 }

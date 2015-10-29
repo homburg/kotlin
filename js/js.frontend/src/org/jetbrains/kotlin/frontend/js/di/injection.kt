@@ -24,10 +24,7 @@ import org.jetbrains.kotlin.context.ModuleContext
 import org.jetbrains.kotlin.frontend.di.configureModule
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.js.resolve.JsPlatform
-import org.jetbrains.kotlin.resolve.BindingTrace
-import org.jetbrains.kotlin.resolve.BodyResolveCache
-import org.jetbrains.kotlin.resolve.CompilerEnvironment
-import org.jetbrains.kotlin.resolve.LazyTopDownAnalyzerForTopLevel
+import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.resolve.lazy.FileScopeProviderImpl
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
 import org.jetbrains.kotlin.resolve.lazy.declarations.DeclarationProviderFactory
@@ -49,6 +46,7 @@ public fun createTopDownAnalyzerForJs(
         useInstance(LookupTracker.DO_NOTHING)
         useImpl<ResolveSession>()
         useImpl<LazyTopDownAnalyzerForTopLevel>()
+        useImpl<SupertypeLoopsResolverImpl>()
     }
     return storageComponentContainer.get<LazyTopDownAnalyzerForTopLevel>()
 }
