@@ -16,24 +16,28 @@
 
 package org.jetbrains.kotlin.load.java.sam
 
-import org.jetbrains.kotlin.load.java.components.SamConversionResolver
-import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.resolve.scopes.KtScope
-import org.jetbrains.kotlin.load.java.descriptors.*
-import org.jetbrains.kotlin.load.java.lazy.descriptors.LazyJavaClassDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
-import org.jetbrains.kotlin.load.java.structure.JavaMethod
-import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
+import org.jetbrains.kotlin.incremental.components.NoLookupLocation
+import org.jetbrains.kotlin.load.java.components.SamConversionResolver
+import org.jetbrains.kotlin.load.java.descriptors.JavaClassDescriptor
+import org.jetbrains.kotlin.load.java.descriptors.JavaConstructorDescriptor
+import org.jetbrains.kotlin.load.java.descriptors.JavaMethodDescriptor
+import org.jetbrains.kotlin.load.java.descriptors.SamConstructorDescriptor
+import org.jetbrains.kotlin.load.java.lazy.descriptors.LazyJavaClassDescriptor
 import org.jetbrains.kotlin.load.java.sources.JavaSourceElement
 import org.jetbrains.kotlin.load.java.structure.JavaClass
-import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
+import org.jetbrains.kotlin.load.java.structure.JavaMethod
+import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.resolve.scopes.KtScope
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeUtils
-import java.util.ArrayList
 import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
+import java.util.*
 
 public object SamConversionResolverImpl : SamConversionResolver {
     override fun resolveSamConstructor(name: Name, scope: KtScope): SamConstructorDescriptor? {
-        val classifier = scope.getClassifier(name) as? LazyJavaClassDescriptor ?: return null
+        val classifier = scope.getClassifier(name, NoLookupLocation.FOR_ALREADY_TRACKED) as? LazyJavaClassDescriptor ?: return null
         if (classifier.getFunctionTypeForSamInterface() == null) return null
         return SingleAbstractMethodUtils.createSamConstructorFunction(scope.getContainingDeclaration(), classifier)
     }

@@ -31,12 +31,12 @@ interface LocationInfo {
 
 public enum class NoLookupLocation : LookupLocation {
     @Deprecated("Use more suitable constant if possible")
-    UNSORTED,
     FROM_IDE,
     FROM_BACKEND,
     FROM_TEST,
     FROM_BUILTINS,
     WHEN_CHECK_REDECLARATIONS,
+    WHEN_CHECK_OVERRIDES,
     FOR_SCRIPT,
     FROM_REFLECTION,
     WHEN_RESOLVE_DECLARATION,
@@ -47,7 +47,12 @@ public enum class NoLookupLocation : LookupLocation {
     WHEN_TYPING,
     WHEN_GET_SUPER_MEMBERS,
     FOR_NON_TRACKED_SCOPE,
-    FROM_SYNTHETIC_SCOPE;
+    FROM_SYNTHETIC_SCOPE,
+    FROM_DESERIALIZATION,
+    FROM_JAVA_LOADER,
+    FIND_BY_FQNAME,
+    COMPANION_OBJECT,
+    WHEN_GET_LOCAL_VARIABLE;
 
     override val location: LocationInfo? = null
 }

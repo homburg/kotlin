@@ -81,7 +81,7 @@ public class ResolveSessionUtils {
 
         KtScope scope = outerScope;
         for (Name name : path.pathSegments()) {
-            ClassifierDescriptor classifier = scope.getClassifier(name, NoLookupLocation.UNSORTED);
+            ClassifierDescriptor classifier = scope.getClassifier(name, NoLookupLocation.FIND_BY_FQNAME);
             if (!(classifier instanceof ClassDescriptor)) return null;
             scope = ((ClassDescriptor) classifier).getUnsubstitutedInnerClassesScope();
         }
