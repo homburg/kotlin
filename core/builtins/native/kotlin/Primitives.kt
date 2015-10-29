@@ -144,8 +144,10 @@ public class Byte private () : Number, Comparable<Byte> {
     public operator fun rangeTo(other: Int): IntRange
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Long): LongRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Float): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Double): DoubleRange
 
@@ -284,8 +286,10 @@ public class Short private () : Number, Comparable<Short> {
     public operator fun rangeTo(other: Int): IntRange
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Long): LongRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Float): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Double): DoubleRange
 
@@ -424,8 +428,10 @@ public class Int private () : Number, Comparable<Int> {
     public operator fun rangeTo(other: Int): IntRange
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Long): LongRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Float): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Double): DoubleRange
 
@@ -579,8 +585,10 @@ public class Long private () : Number, Comparable<Long> {
     public operator fun rangeTo(other: Int): LongRange
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Long): LongRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Float): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Double): DoubleRange
 
@@ -726,16 +734,22 @@ public class Float private () : Number, Comparable<Float> {
     /** Returns the negative of this value. */
     public operator fun unaryMinus(): Float
 
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Byte): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Short): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Int): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Long): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Float): FloatRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Double): DoubleRange
 
@@ -866,16 +880,22 @@ public class Double private () : Number, Comparable<Double> {
     /** Returns the negative of this value. */
     public operator fun unaryMinus(): Double
 
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Byte): DoubleRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Short): DoubleRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Int): DoubleRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Long): DoubleRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Float): DoubleRange
+@Deprecated("This range implementation has unclear semantics and will be removed soon.")
      /** Creates a range from this value to the specified [other] value. */
     public operator fun rangeTo(other: Double): DoubleRange
 
