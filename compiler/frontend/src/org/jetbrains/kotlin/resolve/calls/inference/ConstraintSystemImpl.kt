@@ -141,7 +141,7 @@ public class ConstraintSystemImpl : ConstraintSystem {
 
     override fun getStatus(): ConstraintSystemStatus = constraintSystemStatus
 
-    override fun registerTypeVariables(
+    fun registerTypeVariables(
             typeVariables: Collection<TypeParameterDescriptor>,
             mapToOriginal: (TypeParameterDescriptor) -> TypeParameterDescriptor,
             external: Boolean
@@ -178,32 +178,14 @@ public class ConstraintSystemImpl : ConstraintSystem {
         }.filterNotNull().filter { if (original) it in originalToVariables.keys else it in getAllTypeVariables() }
     }
 
-    override fun copy(filterConstraintPosition: (ConstraintPosition) -> Boolean): ConstraintSystem {
-        val newSystem = ConstraintSystemImpl()
-        for ((typeParameter, typeBounds) in allTypeParameterBounds) {
-            newSystem.allTypeParameterBounds.put(typeParameter, typeBounds.filter(filterConstraintPosition))
-        }
-        newSystem.usedInBounds.putAll(usedInBounds.map {
-            val (variable, bounds) = it
-            variable to bounds.filterTo(arrayListOf<Bound>()) { filterConstraintPosition(it.position )}
-        }.toMap())
-        newSystem.externalTypeParameters.addAll(externalTypeParameters )
-        newSystem.errors.addAll(errors.filter { filterConstraintPosition(it.constraintPosition) })
-
-        newSystem.initialConstraints.addAll(initialConstraints.filter { filterConstraintPosition(it.position) })
-        newSystem.originalToVariables.putAll(originalToVariables)
-        newSystem.variablesToOriginal.putAll(variablesToOriginal)
-        return newSystem
-    }
-
-    override fun addSupertypeConstraint(constrainingType: KotlinType?, subjectType: KotlinType, constraintPosition: ConstraintPosition) {
+    fun addSupertypeConstraint(constrainingType: KotlinType?, subjectType: KotlinType, constraintPosition: ConstraintPosition) {
         if (constrainingType != null && TypeUtils.noExpectedType(constrainingType)) return
 
         val newSubjectType = originalToVariablesSubstitutor.substitute(subjectType, Variance.INVARIANT)
         addConstraint(SUB_TYPE, newSubjectType, constrainingType, ConstraintContext(constraintPosition, initial = true))
     }
 
-    override fun addSubtypeConstraint(constrainingType: KotlinType?, subjectType: KotlinType, constraintPosition: ConstraintPosition) {
+    fun addSubtypeConstraint(constrainingType: KotlinType?, subjectType: KotlinType, constraintPosition: ConstraintPosition) {
         val newSubjectType = originalToVariablesSubstitutor.substitute(subjectType, Variance.INVARIANT)
         addConstraint(SUB_TYPE, constrainingType, newSubjectType, ConstraintContext(constraintPosition, initial = true))
     }
@@ -505,6 +487,61 @@ public class ConstraintSystemImpl : ConstraintSystem {
         functionTypeParameters.forEach { fixVariable(it) }
     }
 
+    override fun toBuilder(filterConstraintPosition: (ConstraintPosition) -> Boolean): ConstraintSystem.Builder =
+            Builder(this, filterConstraintPosition)
+
+    class Builder : ConstraintSystem.Builder {
+        val result: ConstraintSystemImpl
+
+        constructor() {
+            result = ConstraintSystemImpl()
+        }
+
+        constructor(system: ConstraintSystemImpl, filterConstraintPosition: (ConstraintPosition) -> Boolean): this() {
+            for ((typeParameter, typeBounds) in system.allTypeParameterBounds) {
+                result.allTypeParameterBounds.put(typeParameter, typeBounds.filter(filterConstraintPosition))
+            }
+            result.usedInBounds.putAll(system.usedInBounds.map {
+                val (variable, bounds) = it
+                variable to bounds.filterTo(arrayListOf<Bound>()) { filterConstraintPosition(it.position )}
+            }.toMap())
+            result.externalTypeParameters.addAll(system.externalTypeParameters )
+            result.errors.addAll(system.errors.filter { filterConstraintPosition(it.constraintPosition) })
+
+            result.initialConstraints.addAll(system.initialConstraints.filter { filterConstraintPosition(it.position) })
+            result.originalToVariables.putAll(system.originalToVariables)
+            result.variablesToOriginal.putAll(system.variablesToOriginal)
+        }
+
+        override fun registerTypeVariables(
+                typeVariables: Collection<TypeParameterDescriptor>,
+                mapToOriginal: (TypeParameterDescriptor) -> TypeParameterDescriptor,
+                external: Boolean
+        ) {
+            result.registerTypeVariables(typeVariables, mapToOriginal, external)
+        }
+
+        override fun addSubtypeConstraint(constrainingType: KotlinType?, subjectType: KotlinType, constraintPosition: ConstraintPosition) {
+            result.addSubtypeConstraint(constrainingType, subjectType, constraintPosition)
+        }
+
+        override fun addSupertypeConstraint(constrainingType: KotlinType?, subjectType: KotlinType, constraintPosition: ConstraintPosition) {
+            result.addSupertypeConstraint(constrainingType, subjectType, constraintPosition)
+        }
+
+        fun addConstraint(
+                constraintKind: ConstraintKind,
+                subType: KotlinType?,
+                superType: KotlinType?,
+                constraintContext: ConstraintContext
+        ) {
+            result.addConstraint(constraintKind, subType, superType, constraintContext)
+        }
+
+        override fun build(): ConstraintSystem {
+            return result
+        }
+    }
 }
 
 fun createTypeForFunctionPlaceholder(

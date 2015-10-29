@@ -116,15 +116,16 @@ class FuzzyType(
             return if (type.checkInheritance(otherType.type)) TypeSubstitutor.EMPTY else null
         }
 
-        val constraintSystem = ConstraintSystemImpl()
-        constraintSystem.registerTypeVariables(freeParameters)
-        constraintSystem.registerTypeVariables(otherType.freeParameters)
+        val builder = ConstraintSystemImpl.Builder()
+        builder.registerTypeVariables(freeParameters)
+        builder.registerTypeVariables(otherType.freeParameters)
 
         when (matchKind) {
-            MatchKind.IS_SUBTYPE -> constraintSystem.addSubtypeConstraint(type, otherType.type, ConstraintPositionKind.RECEIVER_POSITION.position())
-            MatchKind.IS_SUPERTYPE -> constraintSystem.addSubtypeConstraint(otherType.type, type, ConstraintPositionKind.RECEIVER_POSITION.position())
+            MatchKind.IS_SUBTYPE -> builder.addSubtypeConstraint(type, otherType.type, ConstraintPositionKind.RECEIVER_POSITION.position())
+            MatchKind.IS_SUPERTYPE -> builder.addSubtypeConstraint(otherType.type, type, ConstraintPositionKind.RECEIVER_POSITION.position())
         }
 
+        val constraintSystem = builder.build()
         constraintSystem.fixVariables()
 
         if (!constraintSystem.getStatus().hasContradiction()) {
