@@ -2011,7 +2011,6 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
 
             boolean directToField = isSyntheticField && contextKind() != OwnerKind.DEFAULT_IMPLS;
             ClassDescriptor superCallTarget = resolvedCall == null ? null : getSuperCallTarget(resolvedCall.getCall());
-            propertyDescriptor = context.accessibleDescriptor(propertyDescriptor, superCallTarget);
 
             if (directToField) {
                 receiver = StackValue.receiverWithoutReceiverArgument(receiver);
@@ -2198,6 +2197,7 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
         DeclarationDescriptor ownerDescriptor = containingDeclaration;
         boolean skipPropertyAccessors;
 
+        PropertyDescriptor originalPropertyDescriptor = DescriptorUtils.unwrapFakeOverride(propertyDescriptor);
         if (fieldAccessorKind != FieldAccessorKind.NORMAL) {
             int flags = AsmUtil.getVisibilityForSpecialPropertyBackingField(propertyDescriptor, isDelegatedProperty);
             skipPropertyAccessors = (flags & ACC_PRIVATE) == 0 || skipAccessorsForPrivateFieldInOuterClass;
@@ -2256,7 +2256,7 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
         if (isExtensionProperty && !isDelegatedProperty) {
             fieldName = null;
         }
-        else if (propertyDescriptor.getContainingDeclaration() == backingFieldContext.getContextDescriptor()) {
+        else if (originalPropertyDescriptor.getContainingDeclaration() == backingFieldContext.getContextDescriptor()) {
             assert backingFieldContext instanceof FieldOwnerContext
                     : "Actual context is " + backingFieldContext + " but should be instance of FieldOwnerContext";
             fieldName = ((FieldOwnerContext) backingFieldContext).getFieldName(propertyDescriptor, isDelegatedProperty);
