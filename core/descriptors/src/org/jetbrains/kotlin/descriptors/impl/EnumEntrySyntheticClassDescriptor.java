@@ -209,7 +209,7 @@ public class EnumEntrySyntheticClassDescriptor extends ClassDescriptorBase {
         @NotNull
         @SuppressWarnings("unchecked")
         private Collection<PropertyDescriptor> computeProperties(@NotNull Name name) {
-            return resolveFakeOverrides(name, (Collection) getSupertypeScope().getProperties(name, NoLookupLocation.UNSORTED));
+            return resolveFakeOverrides(name, (Collection) getSupertypeScope().getProperties(name, NoLookupLocation.FOR_ALREADY_TRACKED));
         }
 
         @NotNull
@@ -220,7 +220,7 @@ public class EnumEntrySyntheticClassDescriptor extends ClassDescriptorBase {
 
         @NotNull
         private Collection<FunctionDescriptor> computeFunctions(@NotNull Name name) {
-            return resolveFakeOverrides(name, getSupertypeScope().getFunctions(name, NoLookupLocation.UNSORTED));
+            return resolveFakeOverrides(name, getSupertypeScope().getFunctions(name, NoLookupLocation.FOR_ALREADY_TRACKED));
         }
 
         @NotNull
@@ -276,8 +276,8 @@ public class EnumEntrySyntheticClassDescriptor extends ClassDescriptorBase {
         private Collection<DeclarationDescriptor> computeAllDeclarations() {
             Collection<DeclarationDescriptor> result = new HashSet<DeclarationDescriptor>();
             for (Name name : enumMemberNames.invoke()) {
-                result.addAll(getFunctions(name, NoLookupLocation.UNSORTED));
-                result.addAll(getProperties(name, NoLookupLocation.UNSORTED));
+                result.addAll(getFunctions(name, NoLookupLocation.WHEN_GET_ALL_DESCRIPTORS));
+                result.addAll(getProperties(name, NoLookupLocation.WHEN_GET_ALL_DESCRIPTORS));
             }
             return result;
         }
