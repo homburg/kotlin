@@ -16,10 +16,7 @@
 
 package org.jetbrains.kotlin.load.java.lazy.descriptors
 
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.load.java.descriptors.SamConstructorDescriptorKindExclude
@@ -109,8 +106,14 @@ public class LazyJavaPackageScope(
         return classes(name)
     }
 
-    override fun getProperties(name: Name, location: LookupLocation) = deserializedPackageScope().getProperties(name, location)
-    override fun getFunctions(name: Name, location: LookupLocation) = deserializedPackageScope().getFunctions(name, location) + super.getFunctions(name, location)
+    override fun getProperties(name: Name, location: LookupLocation): Collection<VariableDescriptor> {
+        recordLookup(name, location)
+        return deserializedPackageScope().getProperties(name, NoLookupLocation.FOR_ALREADY_TRACKED)
+    }
+    override fun getFunctions(name: Name, location: LookupLocation): List<FunctionDescriptor> {
+        recordLookup(name, location)
+        return deserializedPackageScope().getFunctions(name, NoLookupLocation.FOR_ALREADY_TRACKED) + super.getFunctions(name, NoLookupLocation.FOR_ALREADY_TRACKED)
+    }
 
     override fun addExtraDescriptors(result: MutableSet<DeclarationDescriptor>,
                                      kindFilter: DescriptorKindFilter,
