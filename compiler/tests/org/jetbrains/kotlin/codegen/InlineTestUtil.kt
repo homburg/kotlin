@@ -65,19 +65,22 @@ public object InlineTestUtil {
             val cr = ClassReader(bytes)
 
             val inlineFunctions = inlineFunctionsJvmNames(bytes)
-            if (inlineFunctions.isEmpty()) continue
 
-            val classVisitor = object : ClassVisitorWithName() {
-                override fun visitMethod(access: Int, name: String, desc: String, signature: String?, exceptions: Array<String>?): MethodVisitor {
-                    return object : MethodNode(Opcodes.ASM5, access, name, desc, signature, exceptions) {
-                        override fun visitEnd() {
-                            if (name + desc in inlineFunctions) {
-                                inlineMethods.add(MethodInfo(className, name, this.desc))
+            val classVisitor =
+                    if (inlineFunctions.isEmpty())
+                        ClassVisitorWithName()
+                    else
+                        object : ClassVisitorWithName() {
+                            override fun visitMethod(access: Int, name: String, desc: String, signature: String?, exceptions: Array<String>?): MethodVisitor {
+                                return object : MethodNode(Opcodes.ASM5, access, name, desc, signature, exceptions) {
+                                    override fun visitEnd() {
+                                        if (name + desc in inlineFunctions) {
+                                            inlineMethods.add(MethodInfo(className, name, this.desc))
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-            }
 
             cr.accept(classVisitor, 0)
             classHeaders.put(classVisitor.className, getClassHeader(file))
