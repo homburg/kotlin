@@ -16,7 +16,6 @@
 
 package org.jetbrains.kotlin.resolve;
 
-import kotlin.CollectionsKt;
 import kotlin.jvm.functions.Function1;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +54,6 @@ public class DescriptorUtils {
     public static final Name ENUM_VALUES = Name.identifier("values");
     public static final Name ENUM_VALUE_OF = Name.identifier("valueOf");
     public static final FqName JVM_NAME = new FqName("kotlin.jvm.JvmName");
-    public static final FqName PLATFORM_NAME = new FqName("kotlin.platform.platformName");
     public static final FqName VOLATILE = new FqName("kotlin.jvm.Volatile");
     public static final FqName SYNCHRONIZED = new FqName("kotlin.jvm.Synchronized");
 
@@ -598,9 +596,6 @@ public class DescriptorUtils {
     @Nullable
     public static AnnotationDescriptor getJvmNameAnnotation(@NotNull Annotations annotations) {
         AnnotationWithTarget jvmName = Annotations.Companion.findAnyAnnotation(annotations, JVM_NAME);
-        if (jvmName == null) {
-            jvmName = Annotations.Companion.findAnyAnnotation(annotations, PLATFORM_NAME);
-        }
         return jvmName == null ? null : jvmName.getAnnotation();
     }
 
