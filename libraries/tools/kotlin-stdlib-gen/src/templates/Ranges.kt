@@ -2,13 +2,19 @@ package templates
 
 import generators.SourceFile
 import templates.Family.*
+import templates.PrimitiveType.Companion.maxByCapacity
 
 fun ranges(): List<GenericFunction> {
     val templates = arrayListOf<GenericFunction>()
 
+    val rangePrimitives = listOf(PrimitiveType.Int, PrimitiveType.Long, PrimitiveType.Char)
+    fun rangeElementType(fromType: PrimitiveType, toType: PrimitiveType)
+            = maxByCapacity(fromType, toType).let { if (it == PrimitiveType.Char) it else maxByCapacity(it, PrimitiveType.Int) }
+
+
     templates add f("reversed()") {
         only(RangesOfPrimitives, ProgressionsOfPrimitives)
-        only(PrimitiveType.integralPrimitives)
+        only(rangePrimitives)
         doc(ProgressionsOfPrimitives) { "Returns a progression that goes over the same range in the opposite direction with the same step." }
         doc(RangesOfPrimitives) { "Returns a progression that goes over this range in reverse direction." }
         returns("TProgression")
@@ -22,7 +28,7 @@ fun ranges(): List<GenericFunction> {
 
     templates add f("reversed()") {
         only(RangesOfPrimitives, ProgressionsOfPrimitives)
-        only(defaultPrimitives - PrimitiveType.Boolean - PrimitiveType.integralPrimitives)
+        only(defaultPrimitives - PrimitiveType.Boolean - rangePrimitives)
         doc(ProgressionsOfPrimitives) { "Returns a progression that goes over the same range in the opposite direction with the same step." }
         doc(RangesOfPrimitives) { "Returns a progression that goes over this range in reverse direction." }
         returns("TProgression")
@@ -40,7 +46,7 @@ fun ranges(): List<GenericFunction> {
         infix(true)
 
         only(RangesOfPrimitives, ProgressionsOfPrimitives)
-        only(PrimitiveType.integralPrimitives)
+        only(rangePrimitives)
         doc(ProgressionsOfPrimitives) { "Returns a progression that goes over the same range with the given step." }
         doc(RangesOfPrimitives) { "Returns a progression that goes over this range with given step." }
         returns("TProgression")
@@ -62,7 +68,7 @@ fun ranges(): List<GenericFunction> {
         infix(true)
 
         only(RangesOfPrimitives, ProgressionsOfPrimitives)
-        only(defaultPrimitives - PrimitiveType.Boolean - PrimitiveType.integralPrimitives)
+        only(defaultPrimitives - PrimitiveType.Boolean - rangePrimitives)
         doc(ProgressionsOfPrimitives) { "Returns a progression that goes over the same range with the given step." }
         doc(RangesOfPrimitives) { "Returns a progression that goes over this range with given step." }
         returns("TProgression")
@@ -89,13 +95,14 @@ fun ranges(): List<GenericFunction> {
         }
     }
 
+
     fun downTo(fromType: PrimitiveType, toType: PrimitiveType) = f("downTo(to: $toType)") {
         infix(true)
 
         sourceFile(SourceFile.Ranges)
         only(Primitives)
         only(fromType)
-        val elementType = PrimitiveType.maxByCapacity(fromType, toType)
+        val elementType = rangeElementType(fromType, toType)
         val progressionType = elementType.name + "Progression"
         returns(progressionType)
 
@@ -135,7 +142,7 @@ fun ranges(): List<GenericFunction> {
         sourceFile(SourceFile.Ranges)
         only(Primitives)
         only(fromType)
-        val elementType = PrimitiveType.maxByCapacity(fromType, toType)
+        val elementType = rangeElementType(fromType, toType)
         val progressionType = elementType.name + "Range"
         returns(progressionType)
 
@@ -183,8 +190,11 @@ fun ranges(): List<GenericFunction> {
             deprecate(Deprecation("This range implementation has unclear semantics and will be removed soon.", level = DeprecationLevel.WARNING))
             annotations("""@Suppress("DEPRECATION_ERROR")""")
         }
+        else if (rangeType !in rangePrimitives) {
+            deprecate(Deprecation("This range will be removed soon.", level = DeprecationLevel.WARNING))
+        }
 
-        check(rangeType.isNumeric() == itemType.isNumeric()) { "Require rangeType and itemType both be numeric or both not, got: $rangeType, $itemType" }
+        check(rangeType.isNumeric() == itemType.isNumeric()) { "Required rangeType and itemType both to be numeric or both not, got: $rangeType, $itemType" }
         only(Ranges)
         onlyPrimitives(Ranges, rangeType)
         platformName("${rangeType.name.decapitalize()}RangeContains")
