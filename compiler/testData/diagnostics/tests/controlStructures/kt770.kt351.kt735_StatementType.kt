@@ -114,6 +114,28 @@ fun testImplicitCoercion() {
     })
 }
 
+fun fooWithAnyArg(<!UNUSED_PARAMETER!>arg<!>: Any) {}
+fun fooWithAnyNullableArg(<!UNUSED_PARAMETER!>arg<!>: Any?) {}
+
+fun testCoercionToAny() {
+    val d = 21
+    val <!UNUSED_VARIABLE!>x1<!>: Any = if (1>2) 1 else 2.0
+    val <!UNUSED_VARIABLE!>x2<!>: Any? = if (1>2) 1 else 2.0
+    val <!UNUSED_VARIABLE!>x3<!>: Any? = if (1>2) 1 else (if (1>2) null else 2.0)
+
+    fooWithAnyArg(if (1>2) 1 else 2.0)
+    fooWithAnyNullableArg(if (1>2) 1 else 2.0)
+    fooWithAnyNullableArg(if (1>2) 1 else (if (1>2) null else 2.0))
+
+    val <!UNUSED_VARIABLE!>y1<!>: Any = when(d) { 1 -> 1.0 else -> 2.0 }
+    val <!UNUSED_VARIABLE!>y2<!>: Any? = when(d) { 1 -> 1.0 else -> 2.0 }
+    val <!UNUSED_VARIABLE!>y3<!>: Any? = when(d) { 1 -> 1.0; 2 -> null; else -> 2.0 }
+
+    fooWithAnyArg(when(d) { 1 -> 1.0 else -> 2.0 })
+    fooWithAnyNullableArg(when(d) { 1 -> 1.0 else -> 2.0 })
+    fooWithAnyNullableArg(when(d) { 1 -> 1.0; 2 -> null; else -> 2.0 })
+}
+
 fun bar(<!UNUSED_PARAMETER!>a<!>: Unit) {}
 
 fun testStatementInExpressionContext() {
